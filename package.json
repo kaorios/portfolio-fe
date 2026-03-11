@@ -18,23 +18,18 @@
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.18",
     "js-cookie": "^3.0.5",
-    "next": "14.2.35",
+    "next": "^16.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "sharp": "^0.32.6",
     "typescript": "5.1.6"
   },
   "devDependencies": {
-    "@storybook/addon-essentials": "^7.3.2",
-    "@storybook/addon-interactions": "^7.3.2",
-    "@storybook/addon-links": "^7.3.2",
-    "@storybook/addon-onboarding": "^1.0.8",
-    "@storybook/blocks": "^7.3.2",
-    "@storybook/nextjs": "^7.3.2",
-    "@storybook/react": "^7.3.2",
-    "@storybook/testing-library": "^0.2.0",
+    "@storybook/addon-links": "^10.2.17",
+    "@storybook/addon-onboarding": "^10.2.17",
+    "@storybook/nextjs": "^10.2.17",
     "@types/js-cookie": "^3.0.3",
-    "eslint-plugin-storybook": "^0.6.13",
-    "storybook": "^10.1.11"
+    "eslint-plugin-storybook": "^10.2.17",
+    "storybook": "^10.2.17"
   }
 }

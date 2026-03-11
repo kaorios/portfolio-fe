@@ -36,12 +36,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const disabledLoadingAnimation = cookies().get(
+  const cookieStore = await cookies();
+  const disabledLoadingAnimation = cookieStore.get(
     DISABLED_ANIMATION_COOKIE_NAME
   )?.value;
 

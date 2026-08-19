@@ -10,7 +10,6 @@ import { Logo } from '@/app/components/logo';
 import { GlobalNavLink } from '@/app/components/global-nav-link';
 import { cookies } from 'next/headers';
 import { SocialLinks } from './components/social-links';
-import { Chat } from './layout/chat';
 
 const rubik = Rubik({
   subsets: ['latin'],
@@ -100,7 +99,6 @@ export default async function RootLayout({
           </nav>
           <div className={styles.copyright}>&copy; Kaori</div>
         </footer>
-        <Chat />
         <BackgroundStars />
       </body>
     </html>

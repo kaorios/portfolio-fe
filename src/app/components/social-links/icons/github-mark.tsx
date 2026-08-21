@@ -5,6 +5,7 @@ const GitHub = () => (
     viewBox="0 0 98 98"
     xmlns="http://www.w3.org/2000/svg"
   >
+    <title>GitHub</title>
     <path
       fillRule="evenodd"
       clipRule="evenodd"

@@ -19,7 +19,12 @@ const Header = ({ handleClose }: Props) => {
         <div>Kaori Bot</div>
       </div>
       {handleClose ? (
-        <button className={styles.closeButton} onClick={handleClose}>
+        <button
+          type="button"
+          className={styles.closeButton}
+          onClick={handleClose}
+          aria-label="Close chat"
+        >
           <CrossIcon />
         </button>
       ) : (

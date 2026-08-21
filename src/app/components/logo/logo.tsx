@@ -11,6 +11,7 @@ const Logo = () => {
       viewBox="0 0 32 32"
       xmlSpace="preserve"
     >
+      <title>Kaori&apos;s Portfolio</title>
       <rect
         x="-236"
         y="-11.8"

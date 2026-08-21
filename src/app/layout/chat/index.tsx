@@ -20,8 +20,10 @@ const Chat = () => {
   return (
     <div className={styles.chat}>
       <button
+        type="button"
         className={classNames(styles.chatButton, isOpen && styles.hidden)}
         onClick={handleClick}
+        aria-label="Open chat"
       >
         <ChatIcon />
       </button>

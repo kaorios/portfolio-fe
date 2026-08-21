@@ -22,7 +22,7 @@ const Container = ({ initMessages, steps, containerRef }: Props) => {
         // TODO: End or Error
       }
     },
-    [messages, steps]
+    [messages, steps],
   );
 
   const handleCurrentSelectOption = useCallback(
@@ -49,7 +49,7 @@ const Container = ({ initMessages, steps, containerRef }: Props) => {
         handleSetMessage(selectedOption.trigger);
       }, 1000);
     },
-    [messages, handleSetMessage]
+    [messages, handleSetMessage],
   );
 
   useEffect(() => {

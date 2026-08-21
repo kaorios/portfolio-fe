@@ -13,7 +13,7 @@ const Options = ({ options, selectOption }: Props) => {
     (value: number) => {
       selectOption(value);
     },
-    [selectOption]
+    [selectOption],
   );
 
   return (

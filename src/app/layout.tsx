@@ -42,7 +42,7 @@ export default async function RootLayout({
 }) {
   const cookieStore = await cookies();
   const disabledLoadingAnimation = cookieStore.get(
-    DISABLED_ANIMATION_COOKIE_NAME
+    DISABLED_ANIMATION_COOKIE_NAME,
   )?.value;
 
   return (

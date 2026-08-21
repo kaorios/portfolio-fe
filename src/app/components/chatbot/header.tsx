@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import styles from './header.module.css';
 import { CrossIcon } from '../icons';
+import styles from './header.module.css';
 
 interface Props {
   handleClose?: () => void;

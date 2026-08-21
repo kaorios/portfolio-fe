@@ -1,9 +1,9 @@
-import { Bubble } from './bubble';
-import { Options } from './options';
-import styles from './container.module.css';
 import classNames from 'classnames';
-import { Message, Steps, TextStep } from './type';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { Bubble } from './bubble';
+import styles from './container.module.css';
+import { Options } from './options';
+import type { Message, Steps, TextStep } from './type';
 
 interface Props {
   initMessages: Message[];

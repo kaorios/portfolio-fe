@@ -1,7 +1,7 @@
+import classNames from 'classnames';
 import { useEffect } from 'react';
 import styles from './bubble.module.css';
-import classNames from 'classnames';
-import { TextStep } from './type';
+import type { TextStep } from './type';
 
 interface Props {
   message: TextStep;
@@ -21,4 +21,5 @@ const Bubble = ({ message, setMessage }: Props) => {
     </div>
   );
 };
+
 export { Bubble };

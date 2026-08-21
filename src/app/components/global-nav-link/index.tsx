@@ -2,10 +2,10 @@
 
 import classNames from 'classnames';
 import {
-  PropsWithChildren,
-  AnchorHTMLAttributes,
-  useState,
+  type AnchorHTMLAttributes,
+  type PropsWithChildren,
   useCallback,
+  useState,
 } from 'react';
 import styles from './index.module.css';
 

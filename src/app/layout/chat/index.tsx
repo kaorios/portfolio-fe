@@ -1,11 +1,11 @@
 'use client';
 
+import classNames from 'classnames';
+import { useCallback, useState } from 'react';
+import { Chatbot } from '@/app/components/chatbot';
 import { ChatIcon } from '@/app/components/icons';
 import { steps } from './chat-steps';
 import styles from './index.module.css';
-import { Chatbot } from '@/app/components/chatbot';
-import { useCallback, useState } from 'react';
-import classNames from 'classnames';
 
 const Chat = () => {
   const [isOpen, setIsOpen] = useState(false);

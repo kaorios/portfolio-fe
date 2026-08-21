@@ -1,8 +1,8 @@
-import styles from './page.module.css';
+import type { Metadata } from 'next';
 import { projects } from './data';
 import { featuredProjects } from './featured-data';
+import styles from './page.module.css';
 import { Project } from './project';
-import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Works',
 };

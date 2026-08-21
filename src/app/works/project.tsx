@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { type Project as ProjectType } from './data';
+import type { Project as ProjectType } from './data';
 import styles from './project.module.css';
 import { Slider } from './slider';
 
@@ -20,7 +20,7 @@ const Project = ({ project }: { project: ProjectType }) => {
             <a
               href={project.url}
               target="_blank"
-              rel="noopenner"
+              rel="noopener noopenner"
               className={styles.button}
             >
               VIEW LIVE SITE
@@ -34,7 +34,7 @@ const Project = ({ project }: { project: ProjectType }) => {
             <a
               href={project.github}
               target="_blank"
-              rel="noopenner"
+              rel="noopener noopenner"
               className={styles.button}
             >
               VIEW REPOSITORY

@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Button } from './button';
 import styles from './options.module.css';
-import { OptionsStep } from './type';
+import type { OptionsStep } from './type';
 
 interface Props {
   options: OptionsStep['options'];

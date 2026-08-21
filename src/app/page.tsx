@@ -1,7 +1,7 @@
 import classNames from 'classnames';
-import styles from './page.module.css';
 import Link from 'next/link';
 import { Steamboat } from './components/steamboat';
+import styles from './page.module.css';
 
 export default function Home() {
   const title = "Hi! I'm  Kaori :)".split('');

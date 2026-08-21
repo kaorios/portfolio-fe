@@ -1,5 +1,5 @@
-import styles from './slider.module.css';
 import Image from 'next/image';
+import styles from './slider.module.css';
 
 const Slider = ({
   projectId,

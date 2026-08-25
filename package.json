@@ -18,7 +18,7 @@
     "@types/react-dom": "19.2.5",
     "classnames": "^2.3.2",
     "js-cookie": "^3.0.8",
-    "next": "16.3.3",
+    "next": "16.3.2",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "sharp": "^0.35.3",
@@ -31,11 +31,5 @@
     "@storybook/nextjs": "^10.2.17",
     "@types/js-cookie": "^3.0.3",
     "storybook": "^10.2.17"
-  },
-  "pnpm": {
-    "overrides": {
-      "@types/react": "19.2.18",
-      "@types/react-dom": "19.2.5"
-    }
   }
 }

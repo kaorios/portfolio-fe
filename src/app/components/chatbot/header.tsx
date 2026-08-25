@@ -27,9 +27,7 @@ const Header = ({ handleClose }: Props) => {
         >
           <CrossIcon />
         </button>
-      ) : (
-        <></>
-      )}
+      ) : null}
     </div>
   );
 };

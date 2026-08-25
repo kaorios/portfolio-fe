@@ -16,7 +16,7 @@ const Chatbot = ({ initMessages, steps, isActive, onClose }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   if (!isActive) {
-    return <></>;
+    return null;
   }
 
   return (

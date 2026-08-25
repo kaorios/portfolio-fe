@@ -48,7 +48,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${rubik.variable} ${wendy_one.variable}`}>
       <body className={styles.body}>
-        {disabledLoadingAnimation === 'true' ? <></> : <FirstLoading />}
+        {disabledLoadingAnimation === 'true' ? null : <FirstLoading />}
         <header className={styles.header}>
           <Link href="/">
             <Logo />

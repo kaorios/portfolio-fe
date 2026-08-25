@@ -26,9 +26,7 @@ const Project = ({ project }: { project: ProjectType }) => {
               VIEW LIVE SITE
             </a>
           </div>
-        ) : (
-          <></>
-        )}
+        ) : null}
         {project.github ? (
           <div className={styles.buttonWrapper}>
             <a
@@ -40,9 +38,7 @@ const Project = ({ project }: { project: ProjectType }) => {
               VIEW REPOSITORY
             </a>
           </div>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </div>
       <Slider projectId={project.id} images={project.images} />
     </section>

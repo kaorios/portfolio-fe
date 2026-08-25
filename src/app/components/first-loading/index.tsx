@@ -23,11 +23,11 @@ const FirstLoading = memo(() => {
   }, []);
 
   if (reduceAnimation) {
-    return <></>;
+    return null;
   }
 
   if (!isLoading) {
-    return <></>;
+    return null;
   }
 
   return (

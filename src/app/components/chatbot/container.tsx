@@ -1,13 +1,14 @@
-import { Bubble } from './bubble';
-import { Options } from './options';
-import styles from './container.module.css';
 import classNames from 'classnames';
-import { Message, Steps, TextStep } from './type';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { Bubble } from './bubble';
+import styles from './container.module.css';
+import { Options } from './options';
+import type { Message, Steps, TextStep } from './type';
 
 interface Props {
   initMessages: Message[];
   steps: Steps;
+  // biome-ignore lint/suspicious/noExplicitAny: chat feature is currently hidden, typing is deferred.
   containerRef: any;
 }
 
@@ -22,7 +23,7 @@ const Container = ({ initMessages, steps, containerRef }: Props) => {
         // TODO: End or Error
       }
     },
-    [messages, steps]
+    [messages, steps],
   );
 
   const handleCurrentSelectOption = useCallback(
@@ -32,6 +33,7 @@ const Container = ({ initMessages, steps, containerRef }: Props) => {
 
       if (m?.type !== 'options') return;
 
+      // biome-ignore lint/suspicious/noExplicitAny: chat feature is currently hidden, typing is deferred.
       const selectedOption = m.options.find((o: any) => o.value === value);
 
       if (!selectedOption) return;
@@ -49,9 +51,10 @@ const Container = ({ initMessages, steps, containerRef }: Props) => {
         handleSetMessage(selectedOption.trigger);
       }, 1000);
     },
-    [messages, handleSetMessage]
+    [messages, handleSetMessage],
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: messages.length is not read inside the effect, it is the trigger that scrolls to the bottom when a new message arrives.
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTo({

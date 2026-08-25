@@ -15,7 +15,7 @@
 }
 @media (prefers-reduced-motion: no-preference) {
   .link.hover::after {
-    content: '';
+    content: "";
     display: block;
     position: absolute;
     width: 200%;
@@ -28,7 +28,7 @@
     animation: sparkle 0.8s steps(1) infinite;
   }
   .link.click::after {
-    content: '';
+    content: "";
     display: block;
     position: absolute;
     width: 200%;
@@ -38,7 +38,7 @@
     left: -50%;
     background-position: center center;
     background-repeat: no-repeat;
-    background-image: url('./spark-1.svg');
+    background-image: url("./spark-1.svg");
     animation: scaleup 0.3s forwards;
   }
 }
@@ -51,10 +51,10 @@
 
 @keyframes sparkle {
   0% {
-    background-image: url('./spark-1.svg');
+    background-image: url("./spark-1.svg");
   }
   50% {
-    background-image: url('./spark-2.svg');
+    background-image: url("./spark-2.svg");
   }
 }
 

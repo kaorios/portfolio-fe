@@ -1,9 +1,9 @@
 'use client';
-import { Header } from './header';
-import { Container } from './container';
-import styles from './index.module.css';
 import { useRef } from 'react';
-import { Message, Steps } from './type';
+import { Container } from './container';
+import { Header } from './header';
+import styles from './index.module.css';
+import type { Message, Steps } from './type';
 
 interface Props {
   initMessages: Message[];
@@ -16,7 +16,7 @@ const Chatbot = ({ initMessages, steps, isActive, onClose }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   if (!isActive) {
-    return <></>;
+    return null;
   }
 
   return (

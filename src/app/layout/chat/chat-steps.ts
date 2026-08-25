@@ -1,4 +1,4 @@
-import { Steps } from '@/app/components/chatbot/type';
+import type { Steps } from '@/app/components/chatbot/type';
 
 export const steps: Steps = {
   '1': {

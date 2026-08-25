@@ -1,10 +1,10 @@
 'use client';
 
+import Cookies from 'js-cookie';
 import { memo, useEffect, useState } from 'react';
+import { DISABLED_ANIMATION_COOKIE_NAME } from './const';
 import styles from './index.module.css';
 import Logo from './logo';
-import Cookies from 'js-cookie';
-import { DISABLED_ANIMATION_COOKIE_NAME } from './const';
 
 const FirstLoading = memo(() => {
   const [reduceAnimation, setReduceAnimation] = useState(true);
@@ -23,11 +23,11 @@ const FirstLoading = memo(() => {
   }, []);
 
   if (reduceAnimation) {
-    return <></>;
+    return null;
   }
 
   if (!isLoading) {
-    return <></>;
+    return null;
   }
 
   return (

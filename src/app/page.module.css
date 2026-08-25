@@ -7,9 +7,12 @@
   line-height: 1.2em;
   letter-spacing: 2px;
   margin: var(--size-3) auto;
-  text-shadow: 1px 1px 0 rgb(var(--foreground-rgb)),
-    -1px 1px 0 rgb(var(--foreground-rgb)), 1px -1px 0 rgb(var(--foreground-rgb)),
-    -1px -1px 0 rgb(var(--foreground-rgb)), 5px 3px 0 rgb(var(--foreground-rgb));
+  text-shadow:
+    1px 1px 0 rgb(var(--foreground-rgb)),
+    -1px 1px 0 rgb(var(--foreground-rgb)),
+    1px -1px 0 rgb(var(--foreground-rgb)),
+    -1px -1px 0 rgb(var(--foreground-rgb)),
+    5px 3px 0 rgb(var(--foreground-rgb));
   font-size: clamp(2.5rem, 9vw, 4.5rem);
   white-space: nowrap;
   max-inline-size: fit-content;
@@ -20,7 +23,7 @@
 .title span.space {
   width: 0.2em;
 }
-.title span:nth-child(1) t {
+.title span:nth-child(1) {
   transform: rotate(-10deg);
 }
 .hero {

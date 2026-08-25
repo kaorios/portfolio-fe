@@ -2,7 +2,7 @@ import styles from './index.module.css';
 
 const Steamboat = () => {
   return (
-    <svg viewBox="0 0 2676 3002">
+    <svg viewBox="0 0 2676 3002" aria-hidden="true">
       <g>
         <g id={styles.smokeMayo}>
           <path

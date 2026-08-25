@@ -1,15 +1,15 @@
 import { FirstLoading } from '@/app/components/first-loading';
 import { DISABLED_ANIMATION_COOKIE_NAME } from '@/app/components/first-loading/const';
 import './globals.css';
-import styles from './layout.module.css';
 import type { Metadata } from 'next';
 import { Rubik, Wendy_One } from 'next/font/google';
-import { BackgroundStars } from '@/app/components/background-stars';
-import Link from 'next/link';
-import { Logo } from '@/app/components/logo';
-import { GlobalNavLink } from '@/app/components/global-nav-link';
 import { cookies } from 'next/headers';
+import Link from 'next/link';
+import { BackgroundStars } from '@/app/components/background-stars';
+import { GlobalNavLink } from '@/app/components/global-nav-link';
+import { Logo } from '@/app/components/logo';
 import { SocialLinks } from './components/social-links';
+import styles from './layout.module.css';
 
 const rubik = Rubik({
   subsets: ['latin'],
@@ -42,13 +42,13 @@ export default async function RootLayout({
 }) {
   const cookieStore = await cookies();
   const disabledLoadingAnimation = cookieStore.get(
-    DISABLED_ANIMATION_COOKIE_NAME
+    DISABLED_ANIMATION_COOKIE_NAME,
   )?.value;
 
   return (
     <html lang="en" className={`${rubik.variable} ${wendy_one.variable}`}>
       <body className={styles.body}>
-        {disabledLoadingAnimation === 'true' ? <></> : <FirstLoading />}
+        {disabledLoadingAnimation === 'true' ? null : <FirstLoading />}
         <header className={styles.header}>
           <Link href="/">
             <Logo />

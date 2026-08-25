@@ -48,6 +48,7 @@
 }
 
 .slider::-webkit-scrollbar {
+  /* biome-ignore lint/complexity/noImportantStyles: hiding the WebKit scrollbar is intentional and must not be overridden by user-agent styles. */
   display: none !important;
 }
 

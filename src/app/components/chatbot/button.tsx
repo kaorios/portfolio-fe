@@ -11,7 +11,7 @@ const Button = ({ label, onClick }: Props) => {
   }, [onClick]);
 
   return (
-    <button className={styles.button} onClick={handleClick}>
+    <button type="button" className={styles.button} onClick={handleClick}>
       {label}
     </button>
   );

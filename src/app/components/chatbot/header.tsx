@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import styles from './header.module.css';
 import { CrossIcon } from '../icons';
+import styles from './header.module.css';
 
 interface Props {
   handleClose?: () => void;
@@ -19,12 +19,15 @@ const Header = ({ handleClose }: Props) => {
         <div>Kaori Bot</div>
       </div>
       {handleClose ? (
-        <button className={styles.closeButton} onClick={handleClose}>
+        <button
+          type="button"
+          className={styles.closeButton}
+          onClick={handleClose}
+          aria-label="Close chat"
+        >
           <CrossIcon />
         </button>
-      ) : (
-        <></>
-      )}
+      ) : null}
     </div>
   );
 };

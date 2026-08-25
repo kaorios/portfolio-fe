@@ -18,11 +18,11 @@ const Options = ({ options, selectOption }: Props) => {
 
   return (
     <div className={styles.options}>
-      {options.map((o, index) => (
+      {options.map((o) => (
         <Button
           label={o.label}
           onClick={() => handleClick(o.value)}
-          key={index}
+          key={o.value}
         />
       ))}
     </div>

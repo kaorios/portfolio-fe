@@ -3,17 +3,20 @@ import Link from 'next/link';
 import { Steamboat } from './components/steamboat';
 import styles from './page.module.css';
 
+const TITLE_CHARACTERS = "Hi! I'm  Kaori :)"
+  .split('')
+  .map((character, index) => ({ id: `${character}-${index}`, character }));
+
 export default function Home() {
-  const title = "Hi! I'm  Kaori :)".split('');
   return (
     <main className={styles.main}>
       <h1 className={styles.title}>
-        {title.map((t, index) => (
+        {TITLE_CHARACTERS.map(({ id, character }) => (
           <span
-            key={`${t}${index}`}
-            className={classNames({ [styles.space]: t === ' ' })}
+            key={id}
+            className={classNames({ [styles.space]: character === ' ' })}
           >
-            {t}
+            {character}
           </span>
         ))}
       </h1>

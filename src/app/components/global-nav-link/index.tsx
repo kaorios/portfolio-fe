@@ -13,7 +13,7 @@ type GlobalNavLinkProps = PropsWithChildren<
   AnchorHTMLAttributes<HTMLAnchorElement>
 >;
 
-const GlobalNavLink = ({ children, ...props }: GlobalNavLinkProps) => {
+const GlobalNavLink = ({ children, href, ...props }: GlobalNavLinkProps) => {
   const [isHover, setIsHover] = useState(false);
   const [isClick, setIsClick] = useState(false);
 
@@ -35,8 +35,11 @@ const GlobalNavLink = ({ children, ...props }: GlobalNavLinkProps) => {
   return (
     <a
       {...props}
+      href={href}
       onMouseOver={handleMouseover}
+      onFocus={handleMouseover}
       onMouseLeave={handleMouseleave}
+      onBlur={handleMouseleave}
       onClick={handleClick}
     >
       <div

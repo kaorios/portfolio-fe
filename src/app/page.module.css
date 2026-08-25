@@ -23,7 +23,7 @@
 .title span.space {
   width: 0.2em;
 }
-.title span:nth-child(1) t {
+.title span:nth-child(1) {
   transform: rotate(-10deg);
 }
 .hero {

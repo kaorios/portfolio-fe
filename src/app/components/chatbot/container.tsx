@@ -52,6 +52,7 @@ const Container = ({ initMessages, steps, containerRef }: Props) => {
     [messages, handleSetMessage],
   );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: messages.length is not read inside the effect, it is the trigger that scrolls to the bottom when a new message arrives.
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTo({

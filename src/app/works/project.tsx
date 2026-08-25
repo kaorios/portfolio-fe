@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import type { Project as ProjectType } from './data';
 import styles from './project.module.css';
 import { Slider } from './slider';

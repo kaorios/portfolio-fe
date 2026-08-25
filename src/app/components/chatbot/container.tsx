@@ -8,6 +8,7 @@ import type { Message, Steps, TextStep } from './type';
 interface Props {
   initMessages: Message[];
   steps: Steps;
+  // biome-ignore lint/suspicious/noExplicitAny: chat feature is currently hidden, typing is deferred.
   containerRef: any;
 }
 
@@ -32,6 +33,7 @@ const Container = ({ initMessages, steps, containerRef }: Props) => {
 
       if (m?.type !== 'options') return;
 
+      // biome-ignore lint/suspicious/noExplicitAny: chat feature is currently hidden, typing is deferred.
       const selectedOption = m.options.find((o: any) => o.value === value);
 
       if (!selectedOption) return;

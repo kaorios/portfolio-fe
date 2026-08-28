@@ -41,7 +41,15 @@ export function proxy(request: NextRequest) {
 
   const url = request.nextUrl.clone();
   url.pathname = `/${getLocale(request)}${pathname}`;
-  return NextResponse.redirect(url, 308);
+
+  /*
+   * 307, not 308: the destination is negotiated from `Accept-Language`, so it
+   * must not be cached as permanent. `Vary` keeps shared caches from serving
+   * one visitor's locale to everyone else.
+   */
+  const response = NextResponse.redirect(url, 307);
+  response.headers.set('Vary', 'Accept-Language');
+  return response;
 }
 
 export const config = {

@@ -1,20 +1,13 @@
-export type Project = {
-  id: string;
-  name: string;
-  description: string;
-  tech: string[];
-  date: string;
-  images: string[];
-  url?: string;
-  github?: string;
-};
+import type { Project } from './data';
 
 const suumiee: Project = {
   id: 'suumiee',
   name: 'suumiee',
   url: 'https://suumiee.com/',
-  description:
-    'The suumiee is a product sharing knowledge with team members and sharing the Project progress with a customer. I am working on it with some members.',
+  description: {
+    en: 'The suumiee is a product sharing knowledge with team members and sharing the Project progress with a customer. I am working on it with some members.',
+    ja: 'The suumiee is a product sharing knowledge with team members and sharing the Project progress with a customer. I am working on it with some members.',
+  },
   tech: [
     'TypeScript',
     'React',
@@ -34,8 +27,10 @@ const portfolio: Project = {
   name: 'My Portfolio (This is.)',
   url: 'https://kaorios.com/',
   github: 'https://github.com/suige/portfolio-fe',
-  description:
-    'This is my portfolio version 2. I migrated it from Vue.js (version 1) to Next.js because I mainly use React instead of Vue.js these days. The portfolio includes my favorites and my challenges. One of my challenges is a chatbot that I am creating from scratch. Try it if you want :)',
+  description: {
+    en: 'This is my portfolio version 2. I migrated it from Vue.js (version 1) to Next.js because I mainly use React instead of Vue.js these days. The portfolio includes my favorites and my challenges. One of my challenges is a chatbot that I am creating from scratch. Try it if you want :)',
+    ja: 'This is my portfolio version 2. I migrated it from Vue.js (version 1) to Next.js because I mainly use React instead of Vue.js these days. The portfolio includes my favorites and my challenges. One of my challenges is a chatbot that I am creating from scratch. Try it if you want :)',
+  },
   tech: ['TypeScript', 'React', 'Next.js', 'CSS', 'UI/UX Design'],
   date: '2023.08 - current',
   images: ['portfolio-v2-1.jpg', 'portfolio-v2-2.jpg'],

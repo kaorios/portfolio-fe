@@ -33,6 +33,9 @@ describe('proxy', () => {
       ['ja,en-US;q=0.8', 'ja'],
       ['en-US,en;q=0.9,ja;q=0.7', 'en'],
       ['en;q=0.4,ja;q=0.5', 'ja'],
+      ['ja,en', 'ja'],
+      ['en,ja', 'en'],
+      ['ja;q=0.8,en;q=0.8', 'ja'],
     ])('picks %s -> /%s', (acceptLanguage, expected) => {
       expect(redirect('/', acceptLanguage).pathname).toBe(`/${expected}`);
     });
@@ -45,7 +48,8 @@ describe('proxy', () => {
       expect(redirect('/', 'fr-FR,fr;q=0.9').pathname).toBe('/en');
     });
 
-    it('prefers English on a tie so the default wins', () => {
+    it('breaks an equal-quality tie by the order in the header', () => {
+      expect(redirect('/', 'ja;q=0.5,en;q=0.5').pathname).toBe('/ja');
       expect(redirect('/', 'en;q=0.5,ja;q=0.5').pathname).toBe('/en');
     });
 

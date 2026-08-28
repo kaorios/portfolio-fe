@@ -4,36 +4,52 @@ import { NextResponse } from 'next/server';
 const locales = ['en', 'ja'] as const;
 const defaultLocale = 'en';
 
-type LanguageRange = { tag: string; q: number };
+type Locale = (typeof locales)[number];
+
+/** `order` is the position in the header, which breaks equal-quality ties. */
+type LanguageRange = { tag: string; q: number; order: number };
 
 const parseRanges = (header: string): LanguageRange[] =>
-  header.split(',').map((part) => {
+  header.split(',').map((part, order) => {
     const [tag, ...params] = part.trim().split(';');
     const q = params
       .map((p) => p.trim())
       .find((p) => p.startsWith('q='))
       ?.slice(2);
     const quality = q === undefined ? 1 : Number(q);
-    return { tag: tag.toLowerCase(), q: Number.isNaN(quality) ? 0 : quality };
+    return {
+      tag: tag.toLowerCase(),
+      q: Number.isNaN(quality) ? 0 : quality,
+      order,
+    };
   });
 
 /**
- * Quality the client assigned to one of our locales. An explicit range (`ja`,
+ * The range the client used for one of our locales. An explicit range (`ja`,
  * `ja-JP`) always wins over `*`, so `en;q=0, *;q=1` really does rule out
  * English rather than falling through to the wildcard.
  */
-const qualityOf = (locale: string, ranges: LanguageRange[]) => {
+const rangeFor = (locale: string, ranges: LanguageRange[]) => {
   const explicit = ranges.filter(
     ({ tag }) => tag === locale || tag.startsWith(`${locale}-`),
   );
-  if (explicit.length > 0) return Math.max(...explicit.map(({ q }) => q));
+  const candidates =
+    explicit.length > 0 ? explicit : ranges.filter(({ tag }) => tag === '*');
 
-  return ranges.find(({ tag }) => tag === '*')?.q ?? 0;
+  return candidates.reduce<LanguageRange | undefined>(
+    (best, range) =>
+      !best ||
+      range.q > best.q ||
+      (range.q === best.q && range.order < best.order)
+        ? range
+        : best,
+    undefined,
+  );
 };
 
 /**
- * Pick a locale from the `Accept-Language` header. Ties keep the order of
- * `locales`, so English wins unless the client actually prefers Japanese.
+ * Pick a locale from the `Accept-Language` header. Equal quality is settled by
+ * the order the client listed the languages in, so `ja, en` means Japanese.
  */
 const getLocale = (request: NextRequest) => {
   const header = request.headers.get('accept-language');
@@ -41,9 +57,12 @@ const getLocale = (request: NextRequest) => {
 
   const ranges = parseRanges(header);
   const [preferred] = locales
-    .map((locale) => ({ locale, q: qualityOf(locale, ranges) }))
-    .filter(({ q }) => q > 0)
-    .sort((a, b) => b.q - a.q);
+    .map((locale) => ({ locale, range: rangeFor(locale, ranges) }))
+    .filter(
+      (candidate): candidate is { locale: Locale; range: LanguageRange } =>
+        candidate.range !== undefined && candidate.range.q > 0,
+    )
+    .sort((a, b) => b.range.q - a.range.q || a.range.order - b.range.order);
 
   return preferred?.locale ?? defaultLocale;
 };

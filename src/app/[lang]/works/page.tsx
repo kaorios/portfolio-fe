@@ -1,12 +1,16 @@
 import type { Metadata } from 'next';
+import { alternatesFor } from '../alternates';
 import { getLocale } from '../dictionaries';
 import { projects } from './data';
 import { featuredProjects } from './featured-data';
 import styles from './page.module.css';
 import { Project } from './project';
-export const metadata: Metadata = {
-  title: 'Works',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Works',
+    alternates: await alternatesFor('/works'),
+  };
+}
 
 export default async function Works() {
   const locale = await getLocale();

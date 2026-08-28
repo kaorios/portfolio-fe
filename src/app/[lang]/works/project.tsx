@@ -1,8 +1,14 @@
+import type { Locale } from '../dictionaries';
 import type { Project as ProjectType } from './data';
 import styles from './project.module.css';
 import { Slider } from './slider';
 
-const Project = ({ project }: { project: ProjectType }) => {
+type ProjectProps = {
+  project: ProjectType;
+  locale: Locale;
+};
+
+const Project = ({ project, locale }: ProjectProps) => {
   return (
     <section className={styles.work}>
       <div className={styles.content}>
@@ -12,7 +18,7 @@ const Project = ({ project }: { project: ProjectType }) => {
             <span key={t}>{t}</span>
           ))}
         </p>
-        <p className={styles.description}>{project.description}</p>
+        <p className={styles.description}>{project.description[locale]}</p>
         <time className={styles.date}>{project.date}</time>
         {project.url ? (
           <div className={styles.buttonWrapper}>

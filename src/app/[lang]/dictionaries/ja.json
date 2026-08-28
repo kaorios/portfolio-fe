@@ -1,5 +1,38 @@
 {
   "meta": {
     "description": "I am Kaori, Software engineer."
+  },
+  "home": {
+    "description": {
+      "aim": "My aim is to deliver efficient technological products to those in need of them, and then they receive good experience with the products and life will be better :)",
+      "focus": "These days, I focus on designing and architecting frontend code (also UI component libraries), building web applications using TypeScript, React, and Next.js(CSR, SSR) including unit tests, and building pleasant and effective teams."
+    },
+    "principles": {
+      "cleanCode": {
+        "heading": "Clean Code for Frontend",
+        "body": "Frontend engineers always white humble parts and business parts. To test what the company wants to do, write strong and easy-to-change code at heart. Bonus: the code would be easy to change even for those with little front-end knowledge."
+      },
+      "architecture": {
+        "heading": "Architecture...?",
+        "body": "I am learning the architectures. It will change depending on the size and division of the service, so I always want to come up with an architecture that I think is the best right now for each service."
+      },
+      "philosophy": {
+        "heading": "Philosophy",
+        "body": "Release is always \"exciting\" for me. I continue to try to reduce the worry when releasing as much as possible. I want to strengthen our cooperation with automated testing and QA teams."
+      },
+      "team": {
+        "heading": "Love Teams",
+        "body": "One of the important things when working is a Team for me. I believe that a good team can deliver a good product. What is a good team?, It depends on the teammates. For me, polite vibes, keep learning and improving, and work-life balance. I just want to hear, \"what is a good team for you?\"."
+      }
+    },
+    "extra": {
+      "heading": "Extra",
+      "lead": "I am writing a tech blog and working a private project:",
+      "links": {
+        "blog": "Tech Blog (Japanese only)",
+        "suumiee": "Suumiee (Private Project)"
+      },
+      "closing": "In my free time, I relax in a lovely cafe with sweeeeets or play games."
+    }
   }
 }

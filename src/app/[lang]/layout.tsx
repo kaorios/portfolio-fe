@@ -29,10 +29,18 @@ export async function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
 }
 
+/** Resolves the relative URLs in `alternates` and `openGraph` to absolute ones. */
+const SITE_URL = 'https://kaorios.com';
+
+/** Open Graph wants the underscored form, not the URL segment. */
+const OG_LOCALES = { en: 'en_US', ja: 'ja_JP' } as const;
+
 export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
   const dict = await getDictionary();
 
   return {
+    metadataBase: new URL(SITE_URL),
     title: {
       default: "Kaori's Portfolio",
       template: "%s | Kaori's Portfolio",
@@ -40,6 +48,10 @@ export async function generateMetadata(): Promise<Metadata> {
     description: dict.meta.description,
     openGraph: {
       images: '/img/ogp.png',
+      locale: OG_LOCALES[locale],
+      alternateLocale: locales
+        .filter((it) => it !== locale)
+        .map((it) => OG_LOCALES[it]),
     },
   };
 }

@@ -1,12 +1,18 @@
 import classNames from 'classnames';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Steamboat } from '@/app/components/steamboat';
+import { alternatesFor } from './alternates';
 import { getDictionary } from './dictionaries';
 import styles from './page.module.css';
 
 const TITLE_CHARACTERS = "Hi! I'm  Kaori :)"
   .split('')
   .map((character, index) => ({ id: `${character}-${index}`, character }));
+
+export async function generateMetadata(): Promise<Metadata> {
+  return { alternates: await alternatesFor() };
+}
 
 export default async function Home() {
   const { home } = await getDictionary();

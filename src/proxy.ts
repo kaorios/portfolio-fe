@@ -4,31 +4,48 @@ import { NextResponse } from 'next/server';
 const locales = ['en', 'ja'] as const;
 const defaultLocale = 'en';
 
+type LanguageRange = { tag: string; q: number };
+
+const parseRanges = (header: string): LanguageRange[] =>
+  header.split(',').map((part) => {
+    const [tag, ...params] = part.trim().split(';');
+    const q = params
+      .map((p) => p.trim())
+      .find((p) => p.startsWith('q='))
+      ?.slice(2);
+    const quality = q === undefined ? 1 : Number(q);
+    return { tag: tag.toLowerCase(), q: Number.isNaN(quality) ? 0 : quality };
+  });
+
 /**
- * Pick a locale from the `Accept-Language` header.
- * Japanese is only chosen when it outranks English, so the default stays `en`.
+ * Quality the client assigned to one of our locales. An explicit range (`ja`,
+ * `ja-JP`) always wins over `*`, so `en;q=0, *;q=1` really does rule out
+ * English rather than falling through to the wildcard.
+ */
+const qualityOf = (locale: string, ranges: LanguageRange[]) => {
+  const explicit = ranges.filter(
+    ({ tag }) => tag === locale || tag.startsWith(`${locale}-`),
+  );
+  if (explicit.length > 0) return Math.max(...explicit.map(({ q }) => q));
+
+  return ranges.find(({ tag }) => tag === '*')?.q ?? 0;
+};
+
+/**
+ * Pick a locale from the `Accept-Language` header. Ties keep the order of
+ * `locales`, so English wins unless the client actually prefers Japanese.
  */
 const getLocale = (request: NextRequest) => {
   const header = request.headers.get('accept-language');
   if (!header) return defaultLocale;
 
-  const preferred = header
-    .split(',')
-    .map((part) => {
-      const [tag, ...params] = part.trim().split(';');
-      const q = params
-        .map((p) => p.trim())
-        .find((p) => p.startsWith('q='))
-        ?.slice(2);
-      return { tag: tag.toLowerCase(), q: q ? Number(q) : 1 };
-    })
-    .filter(({ q }) => !Number.isNaN(q) && q > 0)
-    .sort((a, b) => b.q - a.q)
-    .find(({ tag }) =>
-      locales.some((locale) => tag === locale || tag.startsWith(`${locale}-`)),
-    );
+  const ranges = parseRanges(header);
+  const [preferred] = locales
+    .map((locale) => ({ locale, q: qualityOf(locale, ranges) }))
+    .filter(({ q }) => q > 0)
+    .sort((a, b) => b.q - a.q);
 
-  return preferred?.tag.startsWith('ja') ? 'ja' : defaultLocale;
+  return preferred?.locale ?? defaultLocale;
 };
 
 export function proxy(request: NextRequest) {

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import Link from 'next/link';
-import { Steamboat } from './components/steamboat';
+import { Steamboat } from '@/app/components/steamboat';
 import styles from './page.module.css';
 
 const TITLE_CHARACTERS = "Hi! I'm  Kaori :)"

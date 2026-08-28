@@ -1,6 +1,6 @@
 import { FirstLoading } from '@/app/components/first-loading';
 import { DISABLED_ANIMATION_COOKIE_NAME } from '@/app/components/first-loading/const';
-import './globals.css';
+import '../globals.css';
 import type { Metadata } from 'next';
 import { Rubik, Wendy_One } from 'next/font/google';
 import { cookies } from 'next/headers';
@@ -8,7 +8,8 @@ import Link from 'next/link';
 import { BackgroundStars } from '@/app/components/background-stars';
 import { GlobalNavLink } from '@/app/components/global-nav-link';
 import { Logo } from '@/app/components/logo';
-import { SocialLinks } from './components/social-links';
+import { SocialLinks } from '@/app/components/social-links';
+import { getDictionary, getLocale, locales } from './dictionaries';
 import styles from './layout.module.css';
 
 const rubik = Rubik({
@@ -24,39 +25,44 @@ const wendy_one = Wendy_One({
   display: 'swap',
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Kaori's Portfolio",
-    template: "%s | Kaori's Portfolio",
-  },
-  description: 'I am Kaori, Software engineer.',
-  openGraph: {
-    images: '/img/ogp.png',
-  },
-};
+export async function generateStaticParams() {
+  return locales.map((lang) => ({ lang }));
+}
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = await getDictionary();
+
+  return {
+    title: {
+      default: "Kaori's Portfolio",
+      template: "%s | Kaori's Portfolio",
+    },
+    description: dict.meta.description,
+    openGraph: {
+      images: '/img/ogp.png',
+    },
+  };
+}
+
+export default async function RootLayout({ children }: LayoutProps<'/[lang]'>) {
+  const locale = await getLocale();
   const cookieStore = await cookies();
   const disabledLoadingAnimation = cookieStore.get(
     DISABLED_ANIMATION_COOKIE_NAME,
   )?.value;
 
   return (
-    <html lang="en" className={`${rubik.variable} ${wendy_one.variable}`}>
+    <html lang={locale} className={`${rubik.variable} ${wendy_one.variable}`}>
       <body className={styles.body}>
         {disabledLoadingAnimation === 'true' ? null : <FirstLoading />}
         <header className={styles.header}>
-          <Link href="/">
+          <Link href={`/${locale}`}>
             <Logo />
           </Link>
           <nav className={styles.globalNav}>
             <ul>
               <li>
-                <GlobalNavLink href="/works" title="works">
+                <GlobalNavLink href={`/${locale}/works`} title="works">
                   works
                 </GlobalNavLink>
               </li>

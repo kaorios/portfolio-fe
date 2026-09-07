@@ -1,0 +1,51 @@
+/* A `fieldset`, so the two buttons are exposed as one labelled group. */
+.switch {
+  display: inline-flex;
+  align-items: stretch;
+  font-family: var(--font-family-h);
+  border: 1px solid rgb(var(--foreground-rgb));
+  border-radius: 2rem;
+  /* `fieldset` defaults to `min-content`, which would stop it from shrinking. */
+  min-inline-size: 0;
+  overflow: hidden;
+}
+
+.option {
+  appearance: none;
+  background: none;
+  border: none;
+  color: rgb(var(--foreground-rgb), 0.6);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1;
+  text-transform: uppercase;
+  padding: var(--size-1) var(--size-2);
+  cursor: pointer;
+}
+
+.option + .option {
+  border-left: 1px solid rgb(var(--foreground-rgb), 0.4);
+}
+
+/* Reversing the two tokens keeps the contrast in both color schemes. */
+.option.current {
+  background: rgb(var(--foreground-rgb));
+  color: rgb(var(--background-end-rgb));
+  font-weight: bold;
+  cursor: default;
+}
+
+.option:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px rgb(var(--foreground-rgb));
+}
+
+.option.current:focus-visible {
+  box-shadow: inset 0 0 0 2px rgb(var(--background-end-rgb));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .option:not(.current):hover {
+    color: rgb(var(--foreground-rgb));
+  }
+}

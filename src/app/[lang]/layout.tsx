@@ -2,28 +2,15 @@ import { FirstLoading } from '@/app/components/first-loading';
 import { DISABLED_ANIMATION_COOKIE_NAME } from '@/app/components/first-loading/const';
 import '../globals.css';
 import type { Metadata } from 'next';
-import { Rubik, Wendy_One } from 'next/font/google';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { BackgroundStars } from '@/app/components/background-stars';
 import { GlobalNavLink } from '@/app/components/global-nav-link';
 import { Logo } from '@/app/components/logo';
 import { SocialLinks } from '@/app/components/social-links';
+import { fontVariables } from '@/app/fonts';
 import { getDictionary, getLocale, locales } from './dictionaries';
 import styles from './layout.module.css';
-
-const rubik = Rubik({
-  subsets: ['latin'],
-  variable: '--font-rubik',
-  display: 'swap',
-});
-
-const wendy_one = Wendy_One({
-  weight: ['400'],
-  subsets: ['latin'],
-  variable: '--font-wendy-one',
-  display: 'swap',
-});
 
 export async function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -64,7 +51,7 @@ export default async function RootLayout({ children }: LayoutProps<'/[lang]'>) {
   )?.value;
 
   return (
-    <html lang={locale} className={`${rubik.variable} ${wendy_one.variable}`}>
+    <html lang={locale} className={fontVariables}>
       <body className={styles.body}>
         {disabledLoadingAnimation === 'true' ? null : <FirstLoading />}
         <header className={styles.header}>

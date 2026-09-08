@@ -52,10 +52,13 @@
   cursor: pointer;
 }
 
-/* Reversing the two tokens keeps the contrast against the thumb. */
+/*
+ * Reversing the two tokens keeps the contrast against the thumb. The weight is
+ * deliberately left alone: Wendy One ships only 400, so bolding the selected
+ * option would be synthesized by the browser, and the thumb already marks it.
+ */
 .option.current {
   color: rgb(var(--background-end-rgb));
-  font-weight: bold;
   cursor: default;
 }
 

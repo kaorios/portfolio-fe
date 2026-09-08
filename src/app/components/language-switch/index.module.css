@@ -1,16 +1,45 @@
 /* A `fieldset`, so the two buttons are exposed as one labelled group. */
 .switch {
+  position: relative;
   display: inline-flex;
   align-items: stretch;
   font-family: var(--font-family-h);
   border: 1px solid rgb(var(--foreground-rgb));
   border-radius: 2rem;
+  /* Room for the thumb to sit inside the frame rather than against it. */
+  padding: var(--switch-gap);
   /* `fieldset` defaults to `min-content`, which would stop it from shrinking. */
   min-inline-size: 0;
-  overflow: hidden;
+  --switch-gap: 3px;
+}
+
+/*
+ * The moving selection. Position comes from `--selected-index`, set by the
+ * component, so the selected option is the one the thumb travelled to rather
+ * than one of two colors the reader has to tell apart.
+ */
+.thumb {
+  position: absolute;
+  top: var(--switch-gap);
+  bottom: var(--switch-gap);
+  left: var(--switch-gap);
+  width: calc((100% - var(--switch-gap) * 2) / var(--option-count));
+  border-radius: 2rem;
+  background: rgb(var(--foreground-rgb));
+  transform: translateX(calc(var(--selected-index) * 100%));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .thumb {
+    transition: transform 0.25s ease;
+  }
 }
 
 .option {
+  /* Equal widths, so one thumb width covers exactly one option. */
+  flex: 1 1 0;
+  /* Above the thumb, which the button would otherwise be painted under. */
+  position: relative;
   appearance: none;
   background: none;
   border: none;
@@ -23,13 +52,8 @@
   cursor: pointer;
 }
 
-.option + .option {
-  border-left: 1px solid rgb(var(--foreground-rgb), 0.4);
-}
-
-/* Reversing the two tokens keeps the contrast in both color schemes. */
+/* Reversing the two tokens keeps the contrast against the thumb. */
 .option.current {
-  background: rgb(var(--foreground-rgb));
   color: rgb(var(--background-end-rgb));
   font-weight: bold;
   cursor: default;
@@ -37,6 +61,7 @@
 
 .option:focus-visible {
   outline: none;
+  border-radius: 2rem;
   box-shadow: inset 0 0 0 2px rgb(var(--foreground-rgb));
 }
 

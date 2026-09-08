@@ -1,7 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import { useCallback } from 'react';
+import { type CSSProperties, useCallback } from 'react';
 import type { Locale } from '@/app/[lang]/dictionaries';
 import styles from './index.module.css';
 
@@ -45,8 +45,18 @@ interface Props {
 }
 
 const LanguageSwitch = ({ locale, onSelect }: Props) => {
+  /*
+   * The thumb is one option wide and slides to the selected one, so the count
+   * and the index are all the stylesheet needs to place it.
+   */
+  const placement = {
+    '--option-count': ORDER.length,
+    '--selected-index': ORDER.indexOf(locale),
+  } as CSSProperties;
+
   return (
-    <fieldset className={styles.switch} aria-label="Language">
+    <fieldset className={styles.switch} style={placement} aria-label="Language">
+      <span className={styles.thumb} aria-hidden="true" />
       {ORDER.map((it) => (
         <Option
           key={it}

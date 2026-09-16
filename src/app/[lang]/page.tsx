@@ -47,11 +47,6 @@ export default async function Home() {
           <p>{home.principles.cleanCode.body}</p>
         </div>
         <div className={styles.principle}>
-          <h2>{home.principles.architecture.heading}</h2>
-          <p>{home.principles.architecture.body}</p>
-        </div>
-
-        <div className={styles.principle}>
           <h2>{home.principles.philosophy.heading}</h2>
           <p>{home.principles.philosophy.body}</p>
         </div>
@@ -71,11 +66,8 @@ export default async function Home() {
           >
             {home.extra.links.blog}
           </Link>
-          <Link href="https://suumiee.com/" target="_blank" rel="noopenner">
-            {home.extra.links.suumiee}
-          </Link>
         </div>
-        <p>{home.extra.closing}</p>
+        {/*<p>{home.extra.closing}</p>*/}
       </div>
     </main>
   );

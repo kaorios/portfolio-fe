@@ -51,6 +51,13 @@ describe('createRegistry', () => {
       expect(() => createRegistry([pattern({ html })])).not.toThrow();
     });
 
+    /* Nothing inside a quoted value is an attribute, however it reads. */
+    it('a URL that looks like a handler', () => {
+      const html = '<img src="/online=1" alt="" />';
+
+      expect(() => createRegistry([pattern({ html })])).not.toThrow();
+    });
+
     it('a preview height right at the ceiling', () => {
       const preview = { height: MAX_PREVIEW_HEIGHT };
 
@@ -192,11 +199,26 @@ describe('createRegistry', () => {
       );
     });
 
-    it('carries an inline event handler in its HTML', () => {
-      const html = '<button onclick="alert(1)">go</button>';
-
+    /*
+     * A start tag separates attributes with a solidus as readily as with
+     * whitespace, so both forms name a handler the parser will run.
+     */
+    it.each([
+      ['after a space', '<button onclick="alert(1)">go</button>'],
+      ['after a solidus', '<svg/onload=alert(1)></svg>'],
+      ['after a newline', '<button\n  onclick="alert(1)">go</button>'],
+      ['unquoted', '<button onclick=alert(1)>go</button>'],
+    ])('carries an inline event handler %s', (_, html) => {
       expect(() => createRegistry([pattern({ html })])).toThrow(
         /inline event handler/,
+      );
+    });
+
+    it('carries a javascript: URL in its HTML', () => {
+      const html = '<a href="javascript:alert(1)">go</a>';
+
+      expect(() => createRegistry([pattern({ html })])).toThrow(
+        /javascript: URL/,
       );
     });
 

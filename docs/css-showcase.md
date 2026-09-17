@@ -111,8 +111,15 @@ at all. The one script we inject reports the rendered height back with
 
 Scripts are enabled for that measurement, and the frame cannot tell our script
 from a pattern's. **Patterns are CSS**, so registration rejects HTML carrying a
-`<script>` or an inline `on…` handler, and the measurement stays the only thing
-running in there. Reach for `:hover`, `:focus-visible` or `:has()` instead.
+`<script>`, an inline `on…` handler or a `javascript:` URL, and the measurement
+stays the only thing running in there. Reach for `:hover`, `:focus-visible` or
+`:has()` instead.
+
+The handler check reads the markup with quoted values blanked out, so a URL
+like `src="/online=1"` is not mistaken for one, and it counts a solidus as an
+attribute separator the way a parser does — `<svg/onload=…>` names a handler
+just as `<svg onload=…>` does. It is a guard on content this repository
+authors and reviews, not a sanitiser for anything arriving from outside.
 
 ### Declaring a height
 
@@ -147,7 +154,8 @@ rename one of them in src/content/css-showcase/.
 ```
 
 It rejects a slug that would not survive a URL, a slug claimed twice, empty
-`html` or `css`, a `<script>` or inline `on…` handler in the HTML, a closing
+`html` or `css`, a `<script>`, inline `on…` handler or `javascript:` URL in the
+HTML, a closing
 style tag inside the CSS that would break out of the preview's style element
 (in any casing, since HTML tag names are case-insensitive), an empty
 `learningPoints` or `explanations`, a blank or repeated tag, and a preview

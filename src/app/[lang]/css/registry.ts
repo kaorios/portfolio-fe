@@ -13,10 +13,22 @@ const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
  * Scripting a pattern could bring with it. The preview frame runs scripts so
  * that it can report its height, and anything a pattern carried would run
  * alongside that — including a message shaped like the height it reports.
- * An attribute is only a handler when `on` begins it, so `data-once` is safe.
+ *
+ * A start tag separates attributes with whitespace *or* a solidus, so
+ * `<svg/onload=…>` names a handler every bit as much as `<svg onload=…>`
+ * does. An attribute is only a handler when `on` begins it, so `data-once` is
+ * not one.
  */
 const SCRIPT_TAG = /<script/i;
-const INLINE_HANDLER = /<[a-z][^>]*\son[a-z]+\s*=/i;
+const INLINE_HANDLER = /<[a-z][^>]*[\s/]on[a-z]+\s*=/i;
+const JAVASCRIPT_URL = /=\s*["']?\s*javascript:/i;
+
+/**
+ * Quoted attribute values, blanked before looking for attribute names. A URL
+ * can hold anything an attribute name can — `src="/online=1"` reads as a
+ * handler otherwise — and nothing inside a value is an attribute.
+ */
+const ATTRIBUTE_VALUES = /"[^"]*"|'[^']*'/g;
 
 /**
  * Every message names the pattern and what to change, because these are read
@@ -80,9 +92,15 @@ const validate = (
     );
   }
 
-  if (INLINE_HANDLER.test(pattern.html)) {
+  if (INLINE_HANDLER.test(pattern.html.replace(ATTRIBUTE_VALUES, '""'))) {
     reject(
       `"${slug}" has an inline event handler in its HTML. A pattern is CSS: reach for a selector such as :hover, :focus-visible or :has() instead.`,
+    );
+  }
+
+  if (JAVASCRIPT_URL.test(pattern.html)) {
+    reject(
+      `"${slug}" has a javascript: URL in its HTML, which runs as soon as the link is followed. A pattern is CSS.`,
     );
   }
 

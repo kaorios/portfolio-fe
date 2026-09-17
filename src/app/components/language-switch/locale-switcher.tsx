@@ -6,44 +6,47 @@ import { useCallback } from 'react';
 import type { Locale } from '@/app/[lang]/dictionaries';
 import { LOCALE_COOKIE_NAME } from './const';
 import { LanguageSwitch } from './index';
+import { localePath } from './path';
 
 /** A year: long enough that the choice outlives a browser restart. */
 const COOKIE_EXPIRY_DAYS = 365;
 
-/**
- * The same page under another locale. Every route lives below `/[lang]`, so the
- * first segment is the one to swap and the rest is carried over untouched.
- */
-const swapLocale = (pathname: string, locale: Locale) => {
-  const rest = pathname.split('/').slice(2).join('/');
-  return rest ? `/${locale}/${rest}` : `/${locale}`;
-};
-
 interface Props {
-  /** The locale currently being displayed, from the URL segment. */
+  /** The locale the page was rendered in, from the `[lang]` segment. */
   locale: Locale;
 }
 
 /**
- * Wires the switch to the router. Picking a language is an explicit choice, so
- * it is also written to a cookie that `src/proxy.ts` prefers over the
- * `Accept-Language` negotiation on later visits to an unprefixed URL.
+ * `LanguageSwitch` wired to the router: the control itself stays presentational
+ * so it can be exercised in isolation, and this is the one that navigates.
+ * Selecting a language re-opens the page already on screen under the other
+ * locale segment, rather than sending the visitor back to the home page, and
+ * records the choice so it survives the visit: `src/proxy.ts` prefers the
+ * cookie over the `Accept-Language` negotiation on later unprefixed URLs.
  */
 const LocaleSwitcher = ({ locale }: Props) => {
-  const pathname = usePathname();
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleSelect = useCallback(
-    (selected: Locale) => {
-      if (selected === locale) return;
+    (next: Locale) => {
+      if (next === locale) return;
 
-      Cookies.set(LOCALE_COOKIE_NAME, selected, {
+      /*
+       * Only an explicit pick is remembered. Landing on `/ja` because the
+       * browser asked for it is not a choice, so it must not overwrite one.
+       */
+      Cookies.set(LOCALE_COOKIE_NAME, next, {
         expires: COOKIE_EXPIRY_DAYS,
         path: '/',
         sameSite: 'lax',
       });
 
-      router.push(swapLocale(pathname, selected));
+      /*
+       * `scroll: false`: it is the same page in another language, so the
+       * position the visitor was reading at is still the one they want.
+       */
+      router.push(localePath(pathname, locale, next), { scroll: false });
     },
     [locale, pathname, router],
   );

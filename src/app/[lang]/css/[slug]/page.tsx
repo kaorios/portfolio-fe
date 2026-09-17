@@ -6,6 +6,7 @@ import { alternatesFor } from '../../alternates';
 import { getDictionary, getLocale } from '../../dictionaries';
 import { CodeBlock } from '../code-block';
 import { CssTagList } from '../css-tag-list';
+import { Localized } from '../localized';
 import { ShowcasePreview } from '../preview';
 import { registry } from '../registry';
 import styles from './page.module.css';
@@ -57,8 +58,12 @@ export default async function CssPatternPage({
   return (
     <main className={styles.main}>
       <header className={styles.intro}>
-        <h1 className={styles.title}>{title}</h1>
-        <p>{textFor(pattern.description, locale)}</p>
+        <h1 className={styles.title}>
+          <Localized text={pattern.title} locale={locale} />
+        </h1>
+        <p>
+          <Localized text={pattern.description} locale={locale} />
+        </p>
       </header>
 
       <section className={styles.section}>
@@ -81,8 +86,12 @@ export default async function CssPatternPage({
         <div className={styles.explanations}>
           {pattern.explanations.map((explanation) => (
             <div key={explanation.heading.ja} className={styles.explanation}>
-              <h3>{textFor(explanation.heading, locale)}</h3>
-              <p>{textFor(explanation.body, locale)}</p>
+              <h3>
+                <Localized text={explanation.heading} locale={locale} />
+              </h3>
+              <p>
+                <Localized text={explanation.body} locale={locale} />
+              </p>
             </div>
           ))}
         </div>

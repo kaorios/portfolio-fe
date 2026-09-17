@@ -1,10 +1,34 @@
 import { patterns as published } from '@/content/css-showcase';
-import type { CssPattern } from '@/content/css-showcase/pattern';
+import {
+  type CssPattern,
+  hasText,
+  type LocalizedText,
+} from '@/content/css-showcase/pattern';
+import { MAX_PREVIEW_HEIGHT } from './preview-document';
 
 /** Slugs become URL segments, so they are held to what reads well as one. */
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-const isBlank = (value: string) => value.trim().length === 0;
+/**
+ * Scripting a pattern could bring with it. The preview frame runs scripts so
+ * that it can report its height, and anything a pattern carried would run
+ * alongside that — including a message shaped like the height it reports.
+ *
+ * A start tag separates attributes with whitespace *or* a solidus, so
+ * `<svg/onload=…>` names a handler every bit as much as `<svg onload=…>`
+ * does. An attribute is only a handler when `on` begins it, so `data-once` is
+ * not one.
+ */
+const SCRIPT_TAG = /<script/i;
+const INLINE_HANDLER = /<[a-z][^>]*[\s/]on[a-z]+\s*=/i;
+const JAVASCRIPT_URL = /=\s*["']?\s*javascript:/i;
+
+/**
+ * Quoted attribute values, blanked before looking for attribute names. A URL
+ * can hold anything an attribute name can — `src="/online=1"` reads as a
+ * handler otherwise — and nothing inside a value is an attribute.
+ */
+const ATTRIBUTE_VALUES = /"[^"]*"|'[^']*'/g;
 
 /**
  * Every message names the pattern and what to change, because these are read
@@ -12,6 +36,26 @@ const isBlank = (value: string) => value.trim().length === 0;
  */
 const reject = (message: string): never => {
   throw new Error(`css-showcase: ${message}`);
+};
+
+/**
+ * Prose is only as present as what is written in it. A blank Japanese string
+ * reaches a visitor as an empty heading or a bullet with nothing in it, and a
+ * blank English one is worse: it hides the Japanese that would have stood in
+ * for it.
+ */
+const requireProse = (slug: string, label: string, text: LocalizedText) => {
+  if (!hasText(text.ja)) {
+    reject(
+      `"${slug}" has no Japanese ${label}. Japanese is the language patterns are written in; English is the optional one.`,
+    );
+  }
+
+  if (text.en !== undefined && !hasText(text.en)) {
+    reject(
+      `"${slug}" has an English ${label} with nothing written in it. Leave the English out and the page falls back to the Japanese; a blank one is published as a blank.`,
+    );
+  }
 };
 
 const validate = (
@@ -33,23 +77,34 @@ const validate = (
     );
   }
 
-  if (isBlank(pattern.title.ja)) {
-    reject(
-      `"${slug}" has no Japanese title. Japanese is the language patterns are written in; English is the optional one.`,
-    );
-  }
+  requireProse(slug, 'title', pattern.title);
+  requireProse(slug, 'description', pattern.description);
 
-  if (isBlank(pattern.description.ja)) {
-    reject(`"${slug}" has no Japanese description.`);
-  }
-
-  if (isBlank(pattern.html)) {
+  if (!hasText(pattern.html)) {
     reject(
       `"${slug}" has no HTML. The same string is rendered in the preview and shown as the source, so an empty one leaves a visitor with neither.`,
     );
   }
 
-  if (isBlank(pattern.css)) {
+  if (SCRIPT_TAG.test(pattern.html)) {
+    reject(
+      `"${slug}" has a script in its HTML. A pattern is CSS, and the preview frame is allowed to run scripts only so that it can report its height — a pattern's own script would run beside it.`,
+    );
+  }
+
+  if (INLINE_HANDLER.test(pattern.html.replace(ATTRIBUTE_VALUES, '""'))) {
+    reject(
+      `"${slug}" has an inline event handler in its HTML. A pattern is CSS: reach for a selector such as :hover, :focus-visible or :has() instead.`,
+    );
+  }
+
+  if (JAVASCRIPT_URL.test(pattern.html)) {
+    reject(
+      `"${slug}" has a javascript: URL in its HTML, which runs as soon as the link is followed. A pattern is CSS.`,
+    );
+  }
+
+  if (!hasText(pattern.css)) {
     reject(
       `"${slug}" has no CSS, so there is nothing for the pattern to teach.`,
     );
@@ -58,9 +113,10 @@ const validate = (
   /*
    * The CSS is inlined into a <style> element in the preview document. A
    * closing tag inside it would end that element early and spill the rest of
-   * the pattern onto the preview as text.
+   * the pattern onto the preview as markup. Tag names are case-insensitive, so
+   * "</STYLE>" ends the element every bit as much as "</style>" does.
    */
-  if (pattern.css.includes('</style')) {
+  if (pattern.css.toLowerCase().includes('</style')) {
     reject(
       `"${slug}" has "</style" inside its CSS, which would break out of the preview's style element. Escape it, or move that rule out of the pattern.`,
     );
@@ -70,6 +126,19 @@ const validate = (
     reject(
       `"${slug}" has no explanations, so the detail page has nothing to put under "How it works".`,
     );
+  }
+
+  pattern.explanations.forEach((explanation, index) => {
+    requireProse(
+      slug,
+      `heading for explanation ${index + 1}`,
+      explanation.heading,
+    );
+    requireProse(slug, `body for explanation ${index + 1}`, explanation.body);
+  });
+
+  if (pattern.tags.some((tag) => !hasText(tag))) {
+    reject(`"${slug}" lists a tag that is blank.`);
   }
 
   const duplicateTag = pattern.tags.find(
@@ -83,6 +152,17 @@ const validate = (
   if (height !== undefined && (!Number.isFinite(height) || height <= 0)) {
     reject(
       `"${slug}" declares a preview height of ${height}. It is the pixel height the preview starts at, so it has to be a positive number.`,
+    );
+  }
+
+  /*
+   * The declared height is what a visitor is served before anything is
+   * measured, and all they ever get where scripts do not run, so it is held to
+   * the same ceiling a measured height is.
+   */
+  if (height !== undefined && height > MAX_PREVIEW_HEIGHT) {
+    reject(
+      `"${slug}" declares a preview height of ${height}px, past the ${MAX_PREVIEW_HEIGHT}px a preview is allowed to grow to. Trim the demo, or let it scroll inside a shorter frame.`,
     );
   }
 };

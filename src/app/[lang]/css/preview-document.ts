@@ -5,38 +5,19 @@ import type { CssPattern } from '@/content/css-showcase/pattern';
 export const DEFAULT_PREVIEW_HEIGHT = 240;
 
 /**
- * How tall a measured preview is allowed to grow. A preview is a demo rather
- * than a page: past this it scrolls inside its own frame.
+ * As tall as a preview is ever allowed to grow. A pattern sized against the
+ * viewport — `min-height: 100vh` and the like — measures taller than the frame
+ * it is in, so every height we apply produces a taller measurement and the
+ * frame would climb the page forever. The ceiling ends that, and the limit on
+ * how many times the parent resizes ends it quickly.
  */
-export const MAX_MEASURED_PREVIEW_HEIGHT = 960;
-
-/**
- * The height to give the frame for a height it just reported.
- *
- * The ceiling is what ends a measurement that feeds itself. A pattern sized to
- * the frame's own viewport — a `100vh` child, say — is taller every time the
- * frame grows to fit it, and the observer reports the new height, and so on
- * without end. Clamping settles it: the frame stops growing, the next report
- * clamps to the same height, and nothing changes after that.
- *
- * A pattern that declares a taller height meant it, so the ceiling never pulls
- * a preview below what its author asked for.
- */
-export const previewHeightFor = (measured: number, declared: number) =>
-  Math.min(
-    Math.ceil(measured),
-    Math.max(MAX_MEASURED_PREVIEW_HEIGHT, declared),
-  );
+export const MAX_PREVIEW_HEIGHT = 1200;
 
 /** Names the one message the preview frame is allowed to send its parent. */
 export const PREVIEW_HEIGHT_MESSAGE = 'css-showcase:preview-height';
 
-/**
- * Names the one message the frame listens for. The frame can finish loading
- * before the page hydrates, and a height nobody was listening for is a height
- * that is never heard again, so the parent asks once it is ready to listen.
- */
-export const PREVIEW_MEASURE_MESSAGE = 'css-showcase:measure-preview';
+/** Asks the frame to measure itself again, and to report even an unchanged height. */
+export const PREVIEW_MEASURE_REQUEST = 'css-showcase:measure';
 
 /**
  * The preview runs in its own document, so it inherits nothing from the site.
@@ -58,32 +39,38 @@ const RESET = `
  * Reports the rendered height so the parent can size the frame around the
  * pattern. `postMessage` goes to `*` because the frame is sandboxed without
  * `allow-same-origin` and so cannot learn the parent's origin; the message
- * carries a number and nothing else.
+ * carries a number and nothing else. Unchanged heights are dropped, otherwise
+ * resizing the frame would feed the observer that asked for the resize.
  *
- * A height the observer has already sent is dropped, otherwise resizing the
- * frame would feed the observer that asked for the resize. An answer to a
- * request is sent either way: the parent only asks when it has just started
- * listening, and what it needs then is the height as it stands, not the news
- * that it has not changed since nobody heard it.
+ * The parent can also ask for a measurement. This document can finish loading
+ * before the parent has its listener attached, and a pattern that never moves
+ * again produces no second observation, so without that request the one report
+ * would be lost and the frame would stay at its starting height.
  */
 const MEASURE = `
   let reported = 0;
-  const report = (force) => {
+  const report = () => {
     const height = document.body.scrollHeight;
-    if (height === reported && !force) return;
+    if (height === reported) return;
     reported = height;
     parent.postMessage({ type: ${JSON.stringify(PREVIEW_HEIGHT_MESSAGE)}, height }, '*');
   };
-  new ResizeObserver(() => report(false)).observe(document.body);
-  addEventListener('load', () => report(true));
   addEventListener('message', (event) => {
-    if (event.data === ${JSON.stringify(PREVIEW_MEASURE_MESSAGE)}) report(true);
+    if (event.data !== ${JSON.stringify(PREVIEW_MEASURE_REQUEST)}) return;
+    reported = 0;
+    report();
   });
+  new ResizeObserver(report).observe(document.body);
+  addEventListener('load', report);
 `;
 
 /**
  * The whole preview as one document. It is built from the very strings the
  * page prints as the source, which is what keeps the two from drifting apart.
+ *
+ * The frame is allowed to run scripts, so the only reason nothing but the
+ * measurement runs in it is that registration rejects a pattern carrying a
+ * script or an inline handler.
  */
 export const previewDocument = (pattern: CssPattern, locale: Locale) =>
   [

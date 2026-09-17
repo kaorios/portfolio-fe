@@ -35,9 +35,21 @@ title: { ja: 'ホバーカード', en: 'Hover Card' },  // both
 description: { ja: '……' },                        // Japanese only, for now
 ```
 
+Leave the English out entirely rather than writing an empty string for it: a
+blank translation is published as a blank, where a missing one falls back. The
+registry rejects the blank, so this is a build failure rather than an empty
+link on the English listing.
+
 **A pattern is published in both locales either way.** Hiding the untranslated
 half would contradict the `hreflang` links the page already advertises, and
 would give a visitor a `404` on a page that exists. Fall back, do not hide.
+
+Fallback text is marked with the language it is actually in. Japanese standing
+in for a missing translation is rendered inside `<span lang="ja">`, so a screen
+reader on the English page announces it with Japanese pronunciation rules
+rather than English ones. Pages render prose through `<Localized>` for this;
+`textFor()` is for the places that take a bare string, such as the page title
+and description in `<head>`.
 
 ## Adding a pattern
 
@@ -81,7 +93,7 @@ it is the one the showcase ships with.
 | `tags` | The CSS features on show. Displayed only — the listing does not filter. |
 | `html`, `css` | The pattern. Rendered in the preview *and* printed as the source. |
 | `explanations` | The "How it works" walkthrough. At least one. |
-| `preview.height` | Optional. The preview's height in pixels before it measures itself. |
+| `preview.height` | Optional. The preview's height in pixels before it measures itself, up to 1200. |
 
 ## The detail page
 
@@ -122,7 +134,8 @@ separately.
   never runs JavaScript, and it never throws: a pattern's source is content, so
   whatever is written is coloured as best it can be. Its one known limit is CSS
   nesting, where a nested selector is coloured as a declaration.
-- **Copying** is the one client component here. It reports a failure as plainly
+- **Copying** is the only part of a block that runs in the browser. It reports
+  a failure as plainly
   as a success — the clipboard is missing outside a secure context and can be
   refused — because a control that claims a copy it never made leaves a visitor
   pasting whatever they had copied before. The outcome is announced from a live
@@ -150,6 +163,18 @@ at all. The one script we inject reports the rendered height back with
 `postMessage`; the parent accepts that message only from the frame's own
 `contentWindow`, because an opaque origin reports itself as `"null"`.
 
+Scripts are enabled for that measurement, and the frame cannot tell our script
+from a pattern's. **Patterns are CSS**, so registration rejects HTML carrying a
+`<script>`, an inline `on…` handler or a `javascript:` URL, and the measurement
+stays the only thing running in there. Reach for `:hover`, `:focus-visible` or
+`:has()` instead.
+
+The handler check reads the markup with quoted values blanked out, so a URL
+like `src="/online=1"` is not mistaken for one, and it counts a solidus as an
+attribute separator the way a parser does — `<svg/onload=…>` names a handler
+just as `<svg onload=…>` does. It is a guard on content this repository
+authors and reviews, not a sanitiser for anything arriving from outside.
+
 ### Declaring a height
 
 Measuring needs JavaScript. Until it runs — and anywhere it does not run at all
@@ -160,8 +185,16 @@ it out. So:
 - **Anything taller** should declare it. Otherwise the preview visibly jumps to
   size on load, and stays clipped at 240px where scripts are blocked.
 
-A declared height is a starting point, not a cap; the measurement can grow or
-shrink the frame from there.
+A declared height is where the frame starts, and the measurement grows or
+shrinks it from there — within limits. The frame never grows past 1200px, and
+a measurement resizes it at most four times.
+
+Both limits exist for the same reason. A pattern sized against the viewport,
+such as one with `min-height: 100vh`, measures taller than the frame holding
+it: every height applied produces a taller measurement, and the frame would
+climb the page without ever settling. Fonts and images settle in a round or
+two, so four is room enough for the honest cases and short enough to stop that
+one quickly.
 
 The frame often finishes loading before the page hydrates, and a height nobody
 was listening for is never announced again — the observer drops a height it has
@@ -181,10 +214,20 @@ Error: css-showcase: the slug "hover-card" is registered twice, by
 rename one of them in src/content/css-showcase/.
 ```
 
-It rejects a slug that would not survive a URL, a slug claimed twice, missing
-Japanese prose, empty `html` or `css`, a `</style` inside the CSS that would
-break out of the preview's style element, an empty `explanations`, a repeated
-tag, and a preview height that is not a positive number. `src/app/[lang]/css/registry.test.ts` covers each one.
+It rejects a slug that would not survive a URL, a slug claimed twice, empty
+`html` or `css`, a `<script>`, inline `on…` handler or `javascript:` URL in the
+HTML, a closing style tag inside the CSS that would break out of the preview's
+style element (in any casing, since HTML tag names are case-insensitive), an
+empty `explanations`, a blank or repeated tag, and a preview height that is not
+a positive number or that is past the 1200px ceiling.
+
+Prose is checked wherever it appears, not only at the top level: a blank title
+or description, and a blank explanation heading or body, are each rejected by
+name — in the English as well as the Japanese. A list with an entry in it is not
+the same as a list with something written in it, and the difference reaches a
+visitor as a heading with nothing under it.
+
+`src/app/[lang]/css/registry.test.ts` covers each rule.
 
 An **empty registry is valid**: the listing renders its empty state and no
 detail routes are generated.
@@ -192,6 +235,8 @@ detail routes are generated.
 ## Where things live
 
 ```
+src/locales.ts    The locales the site publishes, and the Locale type
+
 src/content/css-showcase/
   pattern.ts      The schema: CssPattern, LocalizedText, definePattern, textFor
   index.ts        The registration point
@@ -201,6 +246,7 @@ src/app/[lang]/css/
   page.tsx            The listing
   [slug]/page.tsx     The detail template, shared by every pattern
   registry.ts         createRegistry: validation and slug lookup
+  localized.tsx       Prose marked with the language it is actually in
   preview.tsx         ShowcasePreview: the sandboxed preview frame
   preview-document.ts The document that frame renders
   code-block.tsx      CodeBlock: one piece of source, labelled and copyable
@@ -212,3 +258,9 @@ src/app/[lang]/css/
 The schema sits with the content because it changes for the same reason the
 content does — a new field to write — rather than when the pages change. The
 dependency runs one way: `src/app` reads `src/content`, never the reverse.
+
+`src/locales.ts` is what keeps that true. The content has to name the locales
+it is written in, and taking `Locale` from `src/app/[lang]/dictionaries` would
+have pointed the content back at the routing layer that reads it. Both layers
+take it from there instead. `dictionaries.ts` re-exports it, so the rest of the
+site can keep importing `Locale` from where it always has.

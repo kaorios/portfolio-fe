@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CssPattern } from '@/content/css-showcase/pattern';
+import { MAX_PREVIEW_HEIGHT } from './preview-document';
 import { createRegistry } from './registry';
 
 /** A pattern that passes every rule, so a test can break one at a time. */
@@ -38,6 +39,28 @@ describe('createRegistry', () => {
         'hover-card',
         'sticky-header',
       ]);
+    });
+  });
+
+  describe('accepts', () => {
+    /* `on` has to begin the attribute, or every `data-once` would be rejected. */
+    it('an attribute that merely starts with the letters "on"', () => {
+      const html = '<div data-once="true" one-off="yes">v</div>';
+
+      expect(() => createRegistry([pattern({ html })])).not.toThrow();
+    });
+
+    /* Nothing inside a quoted value is an attribute, however it reads. */
+    it('a URL that looks like a handler', () => {
+      const html = '<img src="/online=1" alt="" />';
+
+      expect(() => createRegistry([pattern({ html })])).not.toThrow();
+    });
+
+    it('a preview height right at the ceiling', () => {
+      const preview = { height: MAX_PREVIEW_HEIGHT };
+
+      expect(() => createRegistry([pattern({ preview })])).not.toThrow();
     });
   });
 
@@ -95,9 +118,14 @@ describe('createRegistry', () => {
       expect(() => createRegistry([pattern({ css: '' })])).toThrow(/no CSS/);
     });
 
-    it('closes the preview style element from inside the CSS', () => {
-      const css = '.sample { color: red; }</style><script>alert(1)</script>';
-
+    it.each([
+      ['lowercase', '.sample { color: red; }</style><script>alert(1)</script>'],
+      ['uppercase', '.sample { color: red; }</STYLE><script>alert(1)</script>'],
+      [
+        'mixed case',
+        '.sample { color: red; }</Style><script>alert(1)</script>',
+      ],
+    ])('closes the preview style element in %s', (_, css) => {
       expect(() => createRegistry([pattern({ css })])).toThrow(
         /break out of the preview/,
       );
@@ -106,6 +134,90 @@ describe('createRegistry', () => {
     it('lists no explanations', () => {
       expect(() => createRegistry([pattern({ explanations: [] })])).toThrow(
         /no explanations/,
+      );
+    });
+
+    /*
+     * A non-empty array is not the same as written prose: blanks pass the
+     * length check and reach the page as an empty heading.
+     */
+    it('has an explanation with a blank heading', () => {
+      const explanations = [{ heading: { ja: '' }, body: { ja: '本文' } }];
+
+      expect(() => createRegistry([pattern({ explanations })])).toThrow(
+        /heading for explanation 1/,
+      );
+    });
+
+    it('has an explanation with a blank body', () => {
+      const explanations = [{ heading: { ja: '仕組み' }, body: { ja: ' ' } }];
+
+      expect(() => createRegistry([pattern({ explanations })])).toThrow(
+        /body for explanation 1/,
+      );
+    });
+
+    it('leaves out the Japanese description', () => {
+      expect(() =>
+        createRegistry([pattern({ description: { ja: '' } })]),
+      ).toThrow(/no Japanese description/);
+    });
+
+    /*
+     * A blank translation is worse than a missing one: it passes as written
+     * and so hides the Japanese that would otherwise have stood in for it.
+     */
+    it('has an English translation with nothing written in it', () => {
+      const title = { ja: 'ホバーカード', en: '  ' };
+
+      expect(() => createRegistry([pattern({ title })])).toThrow(
+        /English title with nothing written in it/,
+      );
+    });
+
+    it.each([
+      ['a script element', '<div><script>alert(1)</script></div>'],
+      ['an uppercase script element', '<div><SCRIPT>alert(1)</SCRIPT></div>'],
+    ])('carries %s in its HTML', (_, html) => {
+      expect(() => createRegistry([pattern({ html })])).toThrow(
+        /has a script in its HTML/,
+      );
+    });
+
+    /*
+     * A start tag separates attributes with a solidus as readily as with
+     * whitespace, so both forms name a handler the parser will run.
+     */
+    it.each([
+      ['after a space', '<button onclick="alert(1)">go</button>'],
+      ['after a solidus', '<svg/onload=alert(1)></svg>'],
+      ['after a newline', '<button\n  onclick="alert(1)">go</button>'],
+      ['unquoted', '<button onclick=alert(1)>go</button>'],
+    ])('carries an inline event handler %s', (_, html) => {
+      expect(() => createRegistry([pattern({ html })])).toThrow(
+        /inline event handler/,
+      );
+    });
+
+    it('carries a javascript: URL in its HTML', () => {
+      const html = '<a href="javascript:alert(1)">go</a>';
+
+      expect(() => createRegistry([pattern({ html })])).toThrow(
+        /javascript: URL/,
+      );
+    });
+
+    it('declares a preview height past the ceiling', () => {
+      const preview = { height: MAX_PREVIEW_HEIGHT + 1 };
+
+      expect(() => createRegistry([pattern({ preview })])).toThrow(
+        /past the .*px a preview is allowed to grow to/,
+      );
+    });
+
+    it('lists a blank tag', () => {
+      expect(() => createRegistry([pattern({ tags: ['grid', ' '] })])).toThrow(
+        /tag that is blank/,
       );
     });
 

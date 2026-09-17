@@ -28,13 +28,19 @@ const LocaleSwitcher = ({ locale }: Props) => {
 
   const handleSelect = useCallback(
     (next: Locale) => {
-      if (next === locale) return;
-
       /*
-       * Only an explicit pick is remembered. Landing on `/ja` because the
-       * browser asked for it is not a choice, so it must not overwrite one.
+       * Written before the navigation is considered, because picking the
+       * locale already on screen is still a pick: a visitor who chose Japanese
+       * once and later follows an explicit `/en` link clicks EN to say they
+       * want English now, and skipping the write would leave the stale `ja`
+       * to pull them back on their next unprefixed visit.
+       *
+       * Only a click gets here. Arriving at `/ja` because the browser asked
+       * for it is not a choice, so it still cannot overwrite one.
        */
       Cookies.set(LOCALE_COOKIE.name, next, LOCALE_COOKIE.options);
+
+      if (next === locale) return;
 
       /*
        * `scroll: false`: it is the same page in another language, so the

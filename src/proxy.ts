@@ -1,10 +1,14 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { LOCALE_COOKIE } from './cookies';
 
 const locales = ['en', 'ja'] as const;
 const defaultLocale = 'en';
 
 type Locale = (typeof locales)[number];
+
+const isLocale = (value: string): value is Locale =>
+  (locales as readonly string[]).includes(value);
 
 /** `order` is the position in the header, which breaks equal-quality ties. */
 type LanguageRange = { tag: string; q: number; order: number };
@@ -67,6 +71,16 @@ const getLocale = (request: NextRequest) => {
   return preferred?.locale ?? defaultLocale;
 };
 
+/**
+ * The locale the visitor picked with the language switch, if we still publish
+ * it. A value we do not recognise — a locale we dropped, or a hand-edited
+ * cookie — is ignored so the negotiation below stays in charge.
+ */
+const getChosenLocale = (request: NextRequest) => {
+  const chosen = request.cookies.get(LOCALE_COOKIE.name)?.value;
+  return chosen !== undefined && isLocale(chosen) ? chosen : undefined;
+};
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasLocale = locales.some(
@@ -75,16 +89,23 @@ export function proxy(request: NextRequest) {
 
   if (hasLocale) return;
 
+  /*
+   * An explicit choice outranks the browser's own preference: someone with a
+   * Japanese browser who switched to English meant it, and gets English back.
+   */
+  const locale = getChosenLocale(request) ?? getLocale(request);
+
   const url = request.nextUrl.clone();
-  url.pathname = `/${getLocale(request)}${pathname}`;
+  url.pathname = `/${locale}${pathname}`;
 
   /*
-   * 307, not 308: the destination is negotiated from `Accept-Language`, so it
-   * must not be cached as permanent. `Vary` keeps shared caches from serving
-   * one visitor's locale to everyone else.
+   * 307, not 308: the destination is negotiated per request, so it must not be
+   * cached as permanent. `Vary` keeps shared caches from serving one visitor's
+   * locale to everyone else, and has to name every input the destination is
+   * derived from — the cookie as well as the header.
    */
   const response = NextResponse.redirect(url, 307);
-  response.headers.set('Vary', 'Accept-Language');
+  response.headers.set('Vary', 'Accept-Language, Cookie');
   return response;
 }
 

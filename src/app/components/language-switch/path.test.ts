@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { localePath } from './path';
+import { localeHref, localePath } from './path';
 
 describe('localePath', () => {
   it('swaps the locale segment of the current page', () => {
@@ -28,5 +28,30 @@ describe('localePath', () => {
 
   it('is a no-op path when the locale is unchanged', () => {
     expect(localePath('/en/works', 'en', 'en')).toBe('/en/works');
+  });
+});
+
+describe('localeHref', () => {
+  it('carries the query string over to the other locale', () => {
+    expect(localeHref('/en/works', 'ref=campaign', 'en', 'ja')).toBe(
+      '/ja/works?ref=campaign',
+    );
+  });
+
+  it('accepts the search string with or without its leading question mark', () => {
+    expect(localeHref('/en', '?ref=campaign', 'en', 'ja')).toBe(
+      '/ja?ref=campaign',
+    );
+  });
+
+  it('leaves a bare path alone when there is nothing to carry', () => {
+    expect(localeHref('/en/works', '', 'en', 'ja')).toBe('/ja/works');
+    expect(localeHref('/en', '?', 'en', 'ja')).toBe('/ja');
+  });
+
+  it('keeps every parameter, including repeats and encoded values', () => {
+    expect(localeHref('/en', 'tag=a&tag=b&q=%E3%81%8B', 'en', 'ja')).toBe(
+      '/ja?tag=a&tag=b&q=%E3%81%8B',
+    );
   });
 });

@@ -1,16 +1,25 @@
 import { NextRequest } from 'next/server';
 import { describe, expect, it } from 'vitest';
+import { LOCALE_COOKIE } from './cookies';
 import { proxy } from './proxy';
 
 const ORIGIN = 'https://kaorios.com';
 
-const request = (path: string, acceptLanguage?: string) =>
+/** The locale the visitor picked with the language switch, if they picked one. */
+const request = (path: string, acceptLanguage?: string, chosen?: string) =>
   new NextRequest(new URL(path, ORIGIN), {
-    headers: acceptLanguage ? { 'accept-language': acceptLanguage } : {},
+    headers: {
+      ...(acceptLanguage === undefined
+        ? {}
+        : { 'accept-language': acceptLanguage }),
+      ...(chosen === undefined
+        ? {}
+        : { cookie: `${LOCALE_COOKIE.name}=${chosen}` }),
+    },
   });
 
-const redirect = (path: string, acceptLanguage?: string) => {
-  const response = proxy(request(path, acceptLanguage));
+const redirect = (path: string, acceptLanguage?: string, chosen?: string) => {
+  const response = proxy(request(path, acceptLanguage, chosen));
   if (!response) {
     throw new Error(`expected ${path} to redirect, but the proxy passed it on`);
   }
@@ -62,13 +71,43 @@ describe('proxy', () => {
     });
   });
 
+  describe('a locale the visitor chose', () => {
+    it('wins over the browser preference', () => {
+      expect(redirect('/', 'ja', 'en').pathname).toBe('/en');
+      expect(redirect('/', 'en-US,en;q=0.9', 'ja').pathname).toBe('/ja');
+    });
+
+    it('decides on its own when no Accept-Language is sent', () => {
+      expect(redirect('/', undefined, 'ja').pathname).toBe('/ja');
+    });
+
+    it('keeps the rest of the path', () => {
+      expect(redirect('/works', 'en', 'ja').pathname).toBe('/ja/works');
+    });
+
+    it.each([
+      ['fr', 'a locale we do not publish'],
+      ['', 'an empty value'],
+      ['EN', 'the wrong case'],
+      ['en-US', 'a full language tag rather than a segment'],
+    ])('falls back to negotiation for %s (%s)', (chosen) => {
+      expect(redirect('/', 'ja', chosen).pathname).toBe('/ja');
+      expect(redirect('/', undefined, chosen).pathname).toBe('/en');
+    });
+
+    it('does not pull a path that already carries a locale to the other one', () => {
+      expect(proxy(request('/en/works', 'en', 'ja'))).toBeUndefined();
+    });
+  });
+
   describe('redirect response', () => {
     it('is temporary, because the destination is negotiated per request', () => {
       expect(redirect('/', 'ja').status).toBe(307);
     });
 
-    it('varies on Accept-Language so shared caches stay correct', () => {
-      expect(redirect('/', 'ja').vary).toBe('Accept-Language');
+    it('varies on both inputs to the destination, so shared caches stay correct', () => {
+      expect(redirect('/', 'ja').vary).toBe('Accept-Language, Cookie');
+      expect(redirect('/', 'ja', 'en').vary).toBe('Accept-Language, Cookie');
     });
 
     it('keeps the rest of the path', () => {

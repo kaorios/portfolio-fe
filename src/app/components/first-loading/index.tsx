@@ -2,7 +2,7 @@
 
 import Cookies from 'js-cookie';
 import { memo, useEffect, useState } from 'react';
-import { DISABLED_ANIMATION_COOKIE_NAME } from './const';
+import { DISABLED_ANIMATION_COOKIE } from '@/cookies';
 import styles from './index.module.css';
 import Logo from './logo';
 
@@ -17,8 +17,12 @@ const FirstLoading = memo(() => {
       setIsLoading(false);
     }, 5500);
 
-    if (Cookies.get(DISABLED_ANIMATION_COOKIE_NAME) !== 'true') {
-      Cookies.set(DISABLED_ANIMATION_COOKIE_NAME, 'true', { expires: 3 });
+    if (Cookies.get(DISABLED_ANIMATION_COOKIE.name) !== 'true') {
+      Cookies.set(
+        DISABLED_ANIMATION_COOKIE.name,
+        'true',
+        DISABLED_ANIMATION_COOKIE.options,
+      );
     }
   }, []);
 

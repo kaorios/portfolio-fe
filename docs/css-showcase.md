@@ -35,6 +35,11 @@ title: { ja: 'ホバーカード', en: 'Hover Card' },  // both
 description: { ja: '……' },                        // Japanese only, for now
 ```
 
+Leave the English out entirely rather than writing an empty string for it: a
+blank translation is published as a blank, where a missing one falls back. The
+registry rejects the blank, so this is a build failure rather than an empty
+link on the English listing.
+
 **A pattern is published in both locales either way.** Hiding the untranslated
 half would contradict the `hreflang` links the page already advertises, and
 would give a visitor a `404` on a page that exists. Fall back, do not hide.
@@ -89,7 +94,7 @@ new pattern without being touched.
 | `learningPoints` | The "What you will learn" list. At least one. |
 | `html`, `css` | The pattern. Rendered in the preview *and* printed as the source. |
 | `explanations` | The "How it works" walkthrough. At least one. |
-| `preview.height` | Optional. The preview's height in pixels before it measures itself. |
+| `preview.height` | Optional. The preview's height in pixels before it measures itself, up to 1200. |
 
 ## How the preview stays honest
 
@@ -103,6 +108,11 @@ reach the page around it, and anything scripted inside it cannot reach the page
 at all. The one script we inject reports the rendered height back with
 `postMessage`; the parent accepts that message only from the frame's own
 `contentWindow`, because an opaque origin reports itself as `"null"`.
+
+Scripts are enabled for that measurement, and the frame cannot tell our script
+from a pattern's. **Patterns are CSS**, so registration rejects HTML carrying a
+`<script>` or an inline `on…` handler, and the measurement stays the only thing
+running in there. Reach for `:hover`, `:focus-visible` or `:has()` instead.
 
 ### Declaring a height
 
@@ -137,14 +147,15 @@ rename one of them in src/content/css-showcase/.
 ```
 
 It rejects a slug that would not survive a URL, a slug claimed twice, empty
-`html` or `css`, a closing style tag inside the CSS that would break out of the
-preview's style element (in any casing, since HTML tag names are
-case-insensitive), an empty `learningPoints` or `explanations`, a blank or
-repeated tag, and a preview height that is not a positive number.
+`html` or `css`, a `<script>` or inline `on…` handler in the HTML, a closing
+style tag inside the CSS that would break out of the preview's style element
+(in any casing, since HTML tag names are case-insensitive), an empty
+`learningPoints` or `explanations`, a blank or repeated tag, and a preview
+height that is not a positive number or that is past the 1200px ceiling.
 
-Japanese prose is checked wherever it appears, not only at the top level: a
-blank title or description, and a blank learning point, explanation heading or
-explanation body, are each rejected by name. A list with an entry in it is not
+Prose is checked wherever it appears, not only at the top level: a blank title
+or description, and a blank learning point, explanation heading or explanation
+body, are each rejected by name — in the English as well as the Japanese. A list with an entry in it is not
 the same as a list with something written in it, and the difference reaches a
 visitor as an empty bullet or a heading with nothing under it.
 
@@ -156,6 +167,8 @@ detail routes are generated.
 ## Where things live
 
 ```
+src/locales.ts    The locales the site publishes, and the Locale type
+
 src/content/css-showcase/
   pattern.ts      The schema: CssPattern, LocalizedText, definePattern, textFor
   index.ts        The registration point
@@ -173,3 +186,9 @@ src/app/[lang]/css/
 The schema sits with the content because it changes for the same reason the
 content does — a new field to write — rather than when the pages change. The
 dependency runs one way: `src/app` reads `src/content`, never the reverse.
+
+`src/locales.ts` is what keeps that true. The content has to name the locales
+it is written in, and taking `Locale` from `src/app/[lang]/dictionaries` would
+have pointed the content back at the routing layer that reads it. Both layers
+take it from there instead. `dictionaries.ts` re-exports it, so the rest of the
+site can keep importing `Locale` from where it always has.

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CssPattern } from '@/content/css-showcase/pattern';
+import { MAX_PREVIEW_HEIGHT } from './preview-document';
 import { createRegistry } from './registry';
 
 /** A pattern that passes every rule, so a test can break one at a time. */
@@ -39,6 +40,21 @@ describe('createRegistry', () => {
         'hover-card',
         'sticky-header',
       ]);
+    });
+  });
+
+  describe('accepts', () => {
+    /* `on` has to begin the attribute, or every `data-once` would be rejected. */
+    it('an attribute that merely starts with the letters "on"', () => {
+      const html = '<div data-once="true" one-off="yes">v</div>';
+
+      expect(() => createRegistry([pattern({ html })])).not.toThrow();
+    });
+
+    it('a preview height right at the ceiling', () => {
+      const preview = { height: MAX_PREVIEW_HEIGHT };
+
+      expect(() => createRegistry([pattern({ preview })])).not.toThrow();
     });
   });
 
@@ -153,6 +169,43 @@ describe('createRegistry', () => {
       expect(() =>
         createRegistry([pattern({ description: { ja: '' } })]),
       ).toThrow(/no Japanese description/);
+    });
+
+    /*
+     * A blank translation is worse than a missing one: it passes as written
+     * and so hides the Japanese that would otherwise have stood in for it.
+     */
+    it('has an English translation with nothing written in it', () => {
+      const title = { ja: 'ホバーカード', en: '  ' };
+
+      expect(() => createRegistry([pattern({ title })])).toThrow(
+        /English title with nothing written in it/,
+      );
+    });
+
+    it.each([
+      ['a script element', '<div><script>alert(1)</script></div>'],
+      ['an uppercase script element', '<div><SCRIPT>alert(1)</SCRIPT></div>'],
+    ])('carries %s in its HTML', (_, html) => {
+      expect(() => createRegistry([pattern({ html })])).toThrow(
+        /has a script in its HTML/,
+      );
+    });
+
+    it('carries an inline event handler in its HTML', () => {
+      const html = '<button onclick="alert(1)">go</button>';
+
+      expect(() => createRegistry([pattern({ html })])).toThrow(
+        /inline event handler/,
+      );
+    });
+
+    it('declares a preview height past the ceiling', () => {
+      const preview = { height: MAX_PREVIEW_HEIGHT + 1 };
+
+      expect(() => createRegistry([pattern({ preview })])).toThrow(
+        /past the .*px a preview is allowed to grow to/,
+      );
     });
 
     it('lists a blank tag', () => {

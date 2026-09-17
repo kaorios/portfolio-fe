@@ -1,10 +1,22 @@
 import { patterns as published } from '@/content/css-showcase';
-import type { CssPattern, LocalizedText } from '@/content/css-showcase/pattern';
+import {
+  type CssPattern,
+  hasText,
+  type LocalizedText,
+} from '@/content/css-showcase/pattern';
+import { MAX_PREVIEW_HEIGHT } from './preview-document';
 
 /** Slugs become URL segments, so they are held to what reads well as one. */
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-const isBlank = (value: string) => value.trim().length === 0;
+/**
+ * Scripting a pattern could bring with it. The preview frame runs scripts so
+ * that it can report its height, and anything a pattern carried would run
+ * alongside that — including a message shaped like the height it reports.
+ * An attribute is only a handler when `on` begins it, so `data-once` is safe.
+ */
+const SCRIPT_TAG = /<script/i;
+const INLINE_HANDLER = /<[a-z][^>]*\son[a-z]+\s*=/i;
 
 /**
  * Every message names the pattern and what to change, because these are read
@@ -15,14 +27,21 @@ const reject = (message: string): never => {
 };
 
 /**
- * Prose is only as present as its Japanese. A page renders the Japanese
- * wherever the English is missing, so a blank Japanese string reaches a
- * visitor as an empty heading or a bullet with nothing in it.
+ * Prose is only as present as what is written in it. A blank Japanese string
+ * reaches a visitor as an empty heading or a bullet with nothing in it, and a
+ * blank English one is worse: it hides the Japanese that would have stood in
+ * for it.
  */
 const requireProse = (slug: string, label: string, text: LocalizedText) => {
-  if (isBlank(text.ja)) {
+  if (!hasText(text.ja)) {
     reject(
       `"${slug}" has no Japanese ${label}. Japanese is the language patterns are written in; English is the optional one.`,
+    );
+  }
+
+  if (text.en !== undefined && !hasText(text.en)) {
+    reject(
+      `"${slug}" has an English ${label} with nothing written in it. Leave the English out and the page falls back to the Japanese; a blank one is published as a blank.`,
     );
   }
 };
@@ -49,13 +68,25 @@ const validate = (
   requireProse(slug, 'title', pattern.title);
   requireProse(slug, 'description', pattern.description);
 
-  if (isBlank(pattern.html)) {
+  if (!hasText(pattern.html)) {
     reject(
       `"${slug}" has no HTML. The same string is rendered in the preview and shown as the source, so an empty one leaves a visitor with neither.`,
     );
   }
 
-  if (isBlank(pattern.css)) {
+  if (SCRIPT_TAG.test(pattern.html)) {
+    reject(
+      `"${slug}" has a script in its HTML. A pattern is CSS, and the preview frame is allowed to run scripts only so that it can report its height — a pattern's own script would run beside it.`,
+    );
+  }
+
+  if (INLINE_HANDLER.test(pattern.html)) {
+    reject(
+      `"${slug}" has an inline event handler in its HTML. A pattern is CSS: reach for a selector such as :hover, :focus-visible or :has() instead.`,
+    );
+  }
+
+  if (!hasText(pattern.css)) {
     reject(
       `"${slug}" has no CSS, so there is nothing for the pattern to teach.`,
     );
@@ -98,8 +129,7 @@ const validate = (
     requireProse(slug, `body for explanation ${index + 1}`, explanation.body);
   });
 
-  const blankTag = pattern.tags.find(isBlank);
-  if (blankTag !== undefined) {
+  if (pattern.tags.some((tag) => !hasText(tag))) {
     reject(`"${slug}" lists a tag that is blank.`);
   }
 
@@ -114,6 +144,17 @@ const validate = (
   if (height !== undefined && (!Number.isFinite(height) || height <= 0)) {
     reject(
       `"${slug}" declares a preview height of ${height}. It is the pixel height the preview starts at, so it has to be a positive number.`,
+    );
+  }
+
+  /*
+   * The declared height is what a visitor is served before anything is
+   * measured, and all they ever get where scripts do not run, so it is held to
+   * the same ceiling a measured height is.
+   */
+  if (height !== undefined && height > MAX_PREVIEW_HEIGHT) {
+    reject(
+      `"${slug}" declares a preview height of ${height}px, past the ${MAX_PREVIEW_HEIGHT}px a preview is allowed to grow to. Trim the demo, or let it scroll inside a shorter frame.`,
     );
   }
 };

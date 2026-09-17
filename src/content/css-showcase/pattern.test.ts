@@ -16,6 +16,13 @@ describe('textFor', () => {
   it('falls back to Japanese when the English is not written yet', () => {
     expect(textFor({ ja: 'ホバーカード' }, 'en')).toBe('ホバーカード');
   });
+
+  /* Whitespace is not a translation; it would publish as an empty link. */
+  it('falls back to Japanese when the English is only whitespace', () => {
+    expect(textFor({ ja: 'ホバーカード', en: '  ' }, 'en')).toBe(
+      'ホバーカード',
+    );
+  });
 });
 
 describe('languageOf', () => {
@@ -31,5 +38,9 @@ describe('languageOf', () => {
    */
   it('reports Japanese when the English falls back to it', () => {
     expect(languageOf({ ja: 'ホバーカード' }, 'en')).toBe('ja');
+  });
+
+  it('reports Japanese when the English is only whitespace', () => {
+    expect(languageOf({ ja: 'ホバーカード', en: ' ' }, 'en')).toBe('ja');
   });
 });

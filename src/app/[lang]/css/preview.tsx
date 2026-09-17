@@ -1,8 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { Locale } from '@/app/[lang]/dictionaries';
-import type { CssPattern } from '@/content/css-showcase/pattern';
+import { type CssPattern, languageOf } from '@/content/css-showcase/pattern';
+import type { Locale } from '@/locales';
 import styles from './preview.module.css';
 import {
   DEFAULT_PREVIEW_HEIGHT,
@@ -30,8 +30,9 @@ type PatternPreviewProps = {
 /**
  * Renders a pattern in a frame of its own. `sandbox` without
  * `allow-same-origin` puts the document on an opaque origin, so a pattern's
- * CSS cannot reach the page around it and its scripts cannot reach anything at
- * all. `allow-scripts` is there for the height measurement alone.
+ * CSS cannot reach the page around it. `allow-scripts` is what lets the frame
+ * measure itself; registration rejects a pattern carrying a script or an
+ * inline handler, so the measurement is the only thing that runs in there.
  */
 export const PatternPreview = ({
   pattern,
@@ -39,7 +40,15 @@ export const PatternPreview = ({
   title,
 }: PatternPreviewProps) => {
   const frame = useRef<HTMLIFrameElement>(null);
-  const declared = pattern.preview?.height ?? DEFAULT_PREVIEW_HEIGHT;
+  /*
+   * Held to the ceiling a measured height is held to. This is what a visitor
+   * is served before anything is measured, and all they ever get where scripts
+   * do not run, so an oversized declaration would otherwise stand.
+   */
+  const declared = Math.min(
+    pattern.preview?.height ?? DEFAULT_PREVIEW_HEIGHT,
+    MAX_PREVIEW_HEIGHT,
+  );
   const [height, setHeight] = useState(declared);
   const applied = useRef(declared);
   const adjustments = useRef(0);
@@ -85,6 +94,10 @@ export const PatternPreview = ({
       ref={frame}
       className={styles.preview}
       title={title}
+      /* The frame's accessible name is its `title`, which falls back to the
+         Japanese like any other prose but, being an attribute, cannot be
+         wrapped the way `<Localized>` wraps the rest. */
+      lang={languageOf(pattern.title, locale)}
       sandbox="allow-scripts"
       srcDoc={source}
       style={{ height }}

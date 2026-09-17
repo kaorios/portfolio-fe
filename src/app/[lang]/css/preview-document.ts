@@ -67,6 +67,10 @@ const MEASURE = `
 /**
  * The whole preview as one document. It is built from the very strings the
  * page prints as the source, which is what keeps the two from drifting apart.
+ *
+ * The frame is allowed to run scripts, so the only reason nothing but the
+ * measurement runs in it is that registration rejects a pattern carrying a
+ * script or an inline handler.
  */
 export const previewDocument = (pattern: CssPattern, locale: Locale) =>
   [

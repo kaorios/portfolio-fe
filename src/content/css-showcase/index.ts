@@ -1,3 +1,4 @@
+import { hoverCard } from './hover-card';
 import type { CssPattern } from './pattern';
 
 /**
@@ -7,4 +8,4 @@ import type { CssPattern } from './pattern';
  * Nothing under `src/app` changes, and an empty list is a valid state: the
  * listing renders its empty view and no detail routes are generated.
  */
-export const patterns: readonly CssPattern[] = [];
+export const patterns: readonly CssPattern[] = [hoverCard];

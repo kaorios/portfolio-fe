@@ -4,7 +4,9 @@ import { notFound } from 'next/navigation';
 import { textFor } from '@/content/css-showcase/pattern';
 import { alternatesFor } from '../../alternates';
 import { getDictionary, getLocale } from '../../dictionaries';
-import { PatternPreview } from '../preview';
+import { CodeBlock } from '../code-block';
+import { CssTagList } from '../css-tag-list';
+import { ShowcasePreview } from '../preview';
 import { registry } from '../registry';
 import styles from './page.module.css';
 
@@ -35,6 +37,10 @@ export async function generateMetadata({
  * The template every pattern is rendered through. It reads whatever the
  * registry hands it, so a new pattern is a new module under
  * `src/content/css-showcase/` and nothing else.
+ *
+ * The order is the reading order: what the pattern is, what it looks like, the
+ * two pieces of source behind it, why they are written that way, and the CSS it
+ * rests on.
  */
 export default async function CssPatternPage({
   params,
@@ -45,62 +51,47 @@ export default async function CssPatternPage({
 
   const locale = await getLocale();
   const { cssShowcase } = await getDictionary();
-  const { sections } = cssShowcase;
+  const { sections, code } = cssShowcase;
   const title = textFor(pattern.title, locale);
 
   return (
     <main className={styles.main}>
-      <h1 className={styles.title}>{title}</h1>
-      <p className={styles.description}>
-        {textFor(pattern.description, locale)}
-      </p>
+      <header className={styles.intro}>
+        <h1 className={styles.title}>{title}</h1>
+        <p>{textFor(pattern.description, locale)}</p>
+      </header>
 
       <section className={styles.section}>
-        <h2>{sections.preview}</h2>
-        <PatternPreview pattern={pattern} locale={locale} title={title} />
+        <h2 className={styles.heading}>{sections.preview}</h2>
+        <ShowcasePreview pattern={pattern} locale={locale} title={title} />
       </section>
 
       <section className={styles.section}>
-        <h2>{sections.learn}</h2>
-        <ul className={styles.learningPoints}>
-          {pattern.learningPoints.map((point) => (
-            <li key={point.ja}>{textFor(point, locale)}</li>
+        <h2 className={styles.heading}>{sections.html}</h2>
+        <CodeBlock code={pattern.html} language="html" labels={code} />
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.heading}>{sections.css}</h2>
+        <CodeBlock code={pattern.css} language="css" labels={code} />
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.heading}>{sections.howItWorks}</h2>
+        <div className={styles.explanations}>
+          {pattern.explanations.map((explanation) => (
+            <div key={explanation.heading.ja} className={styles.explanation}>
+              <h3>{textFor(explanation.heading, locale)}</h3>
+              <p>{textFor(explanation.body, locale)}</p>
+            </div>
           ))}
-        </ul>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{sections.html}</h2>
-        <pre className={styles.code}>
-          <code>{pattern.html}</code>
-        </pre>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{sections.css}</h2>
-        <pre className={styles.code}>
-          <code>{pattern.css}</code>
-        </pre>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{sections.howItWorks}</h2>
-        {pattern.explanations.map((explanation) => (
-          <div key={explanation.heading.ja} className={styles.explanation}>
-            <h3>{textFor(explanation.heading, locale)}</h3>
-            <p>{textFor(explanation.body, locale)}</p>
-          </div>
-        ))}
+        </div>
       </section>
 
       {pattern.tags.length > 0 ? (
         <section className={styles.section}>
-          <h2>{sections.tags}</h2>
-          <ul className={styles.tags}>
-            {pattern.tags.map((tag) => (
-              <li key={tag}>{tag}</li>
-            ))}
-          </ul>
+          <h2 className={styles.heading}>{sections.tags}</h2>
+          <CssTagList tags={pattern.tags} />
         </section>
       ) : null}
 

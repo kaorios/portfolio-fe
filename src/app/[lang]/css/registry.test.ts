@@ -8,7 +8,6 @@ const pattern = (overrides: Partial<CssPattern> = {}): CssPattern => ({
   title: { ja: 'サンプル' },
   description: { ja: 'サンプルの説明' },
   tags: ['flexbox'],
-  learningPoints: [{ ja: 'flex での中央揃え' }],
   html: '<div class="sample">sample</div>',
   css: '.sample { display: flex; }',
   explanations: [{ heading: { ja: '仕組み' }, body: { ja: '本文' } }],
@@ -101,12 +100,6 @@ describe('createRegistry', () => {
 
       expect(() => createRegistry([pattern({ css })])).toThrow(
         /break out of the preview/,
-      );
-    });
-
-    it('lists no learning points', () => {
-      expect(() => createRegistry([pattern({ learningPoints: [] })])).toThrow(
-        /no learning points/,
       );
     });
 

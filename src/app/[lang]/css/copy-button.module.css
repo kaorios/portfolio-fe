@@ -1,0 +1,46 @@
+.copy {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+}
+
+.feedback {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.feedback[data-outcome="copied"] {
+  color: #1a6b50;
+}
+
+.feedback[data-outcome="failed"] {
+  color: #b3163f;
+}
+
+.button {
+  padding: 6px 12px;
+  border: 1px solid rgb(var(--card-foreground-rgb), 0.2);
+  border-radius: 999px;
+  background: transparent;
+  color: rgb(var(--card-foreground-rgb));
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.button:hover {
+  background: rgb(var(--card-foreground-rgb), 0.06);
+}
+
+.button:focus-visible {
+  outline: 2px solid rgb(var(--callout-rgb));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+}

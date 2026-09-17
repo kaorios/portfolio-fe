@@ -8,6 +8,13 @@ export const DEFAULT_PREVIEW_HEIGHT = 240;
 export const PREVIEW_HEIGHT_MESSAGE = 'css-showcase:preview-height';
 
 /**
+ * Names the one message the frame listens for. The frame can finish loading
+ * before the page hydrates, and a height nobody was listening for is a height
+ * that is never heard again, so the parent asks once it is ready to listen.
+ */
+export const PREVIEW_MEASURE_MESSAGE = 'css-showcase:measure-preview';
+
+/**
  * The preview runs in its own document, so it inherits nothing from the site.
  * `color-scheme` is all it takes from us: it gives the demo a surface that
  * follows the visitor's light or dark preference, and lets any form control in
@@ -27,19 +34,27 @@ const RESET = `
  * Reports the rendered height so the parent can size the frame around the
  * pattern. `postMessage` goes to `*` because the frame is sandboxed without
  * `allow-same-origin` and so cannot learn the parent's origin; the message
- * carries a number and nothing else. Unchanged heights are dropped, otherwise
- * resizing the frame would feed the observer that asked for the resize.
+ * carries a number and nothing else.
+ *
+ * A height the observer has already sent is dropped, otherwise resizing the
+ * frame would feed the observer that asked for the resize. An answer to a
+ * request is sent either way: the parent only asks when it has just started
+ * listening, and what it needs then is the height as it stands, not the news
+ * that it has not changed since nobody heard it.
  */
 const MEASURE = `
   let reported = 0;
-  const report = () => {
+  const report = (force) => {
     const height = document.body.scrollHeight;
-    if (height === reported) return;
+    if (height === reported && !force) return;
     reported = height;
     parent.postMessage({ type: ${JSON.stringify(PREVIEW_HEIGHT_MESSAGE)}, height }, '*');
   };
-  new ResizeObserver(report).observe(document.body);
-  addEventListener('load', report);
+  new ResizeObserver(() => report(false)).observe(document.body);
+  addEventListener('load', () => report(true));
+  addEventListener('message', (event) => {
+    if (event.data === ${JSON.stringify(PREVIEW_MEASURE_MESSAGE)}) report(true);
+  });
 `;
 
 /**

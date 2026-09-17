@@ -30,8 +30,6 @@ export type CssPattern = {
   description: LocalizedText;
   /** The CSS features the pattern demonstrates, shown as tags on the page. */
   tags: string[];
-  /** The "What you will learn" list. */
-  learningPoints: LocalizedText[];
   /**
    * The pattern itself. These two strings are both rendered in the preview and
    * shown as the source, so what a visitor reads is always what they see; there

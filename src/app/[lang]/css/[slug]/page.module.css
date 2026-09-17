@@ -1,44 +1,50 @@
+/*
+ * Two widths carry the page. The preview and the source get the wider one, so a
+ * pattern has room to behave the way it would in a layout; prose gets the
+ * narrower one, because a line of text that runs the full width is tiring to
+ * read. On a phone both collapse to the one column the screen has.
+ */
 .main {
-  padding: 0 var(--size-2);
+  --content-width: 1080px;
+  --prose-width: 760px;
+
+  /*
+   * The layout's own container is a grid item with auto margins, so it wraps
+   * its content rather than filling the page: a percentage width here would
+   * resolve against whatever the longest line of code happened to measure.
+   * Asking for the width outright is what carries the intended measure out to
+   * the container, and the viewport is what caps it on a narrow screen.
+   */
+  width: min(var(--content-width), 100vw);
+  margin: 0 auto;
+  padding: var(--size-3) var(--size-2) var(--size-6);
+  display: grid;
+  gap: var(--size-5);
+}
+
+.intro {
+  display: grid;
+  gap: var(--size-2);
+  max-width: var(--prose-width);
 }
 
 .title {
-  margin: var(--size-3) 0 var(--size-1);
-}
-
-.description {
-  margin-bottom: var(--size-4);
+  line-height: 1.2;
 }
 
 .section {
-  margin-bottom: var(--size-5);
   display: grid;
   gap: var(--size-2);
 }
 
-.learningPoints,
-.tags {
+.heading {
+  font-size: var(--font-size-md);
+}
+
+.explanations {
   display: grid;
-  gap: var(--size-1);
-  padding-left: var(--size-3);
-}
-
-.tags {
-  grid-auto-flow: column;
-  justify-content: start;
-  gap: var(--size-2);
-  padding-left: 0;
-  list-style: none;
-}
-
-.code {
-  overflow-x: auto;
-  padding: var(--size-2);
-  border-radius: var(--radius);
-  background: rgb(var(--card-background-rgb));
-  color: rgb(var(--card-foreground-rgb));
-  font-size: var(--font-size-sm);
-  line-height: 1.6;
+  gap: var(--size-3);
+  max-width: var(--prose-width);
 }
 
 .explanation {

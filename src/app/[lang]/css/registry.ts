@@ -66,12 +66,6 @@ const validate = (
     );
   }
 
-  if (pattern.learningPoints.length === 0) {
-    reject(
-      `"${slug}" lists no learning points, so the detail page has nothing to put under "What you will learn".`,
-    );
-  }
-
   if (pattern.explanations.length === 0) {
     reject(
       `"${slug}" has no explanations, so the detail page has nothing to put under "How it works".`,

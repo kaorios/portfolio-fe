@@ -1,0 +1,19 @@
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-1);
+  list-style: none;
+  padding: 0;
+}
+
+.tag {
+  padding: 4px 12px;
+  border: 1px solid rgb(var(--foreground-rgb), 0.2);
+  border-radius: 999px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  /* A tag is a label, not a control: nothing here should read as clickable. */
+  color: rgb(var(--foreground-rgb), 0.75);
+  word-break: break-word;
+}

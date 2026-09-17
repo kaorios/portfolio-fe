@@ -1,13 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import type { CssPattern } from '@/content/css-showcase/pattern';
-import { PREVIEW_HEIGHT_MESSAGE, previewDocument } from './preview-document';
+import {
+  PREVIEW_HEIGHT_MESSAGE,
+  PREVIEW_MEASURE_MESSAGE,
+  previewDocument,
+} from './preview-document';
 
 const pattern: CssPattern = {
   slug: 'sample-pattern',
   title: { ja: 'サンプル' },
   description: { ja: 'サンプルの説明' },
   tags: [],
-  learningPoints: [{ ja: 'flex での中央揃え' }],
   html: '<div class="sample">sample</div>',
   css: '.sample { display: flex; }',
   explanations: [{ heading: { ja: '仕組み' }, body: { ja: '本文' } }],
@@ -27,6 +30,15 @@ describe('previewDocument', () => {
 
   it('carries the height measurement the frame reports back', () => {
     expect(previewDocument(pattern, 'ja')).toContain(PREVIEW_HEIGHT_MESSAGE);
+  });
+
+  /*
+   * The frame can finish loading before the page hydrates, and the height it
+   * announced then reached nobody. Answering a request is what lets the parent
+   * pick the measurement up whenever it starts listening.
+   */
+  it('answers a request for the height', () => {
+    expect(previewDocument(pattern, 'ja')).toContain(PREVIEW_MEASURE_MESSAGE);
   });
 
   it('declares the document in the locale it is being read in', () => {

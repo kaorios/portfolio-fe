@@ -1,0 +1,7 @@
+.preview {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: var(--radius);
+  background: rgb(var(--card-background-rgb));
+}

@@ -30,5 +30,19 @@
       },
       "closing": "In my free time, I relax at a lovely café with sweeeeets or play video games."
     }
+  },
+  "cssShowcase": {
+    "heading": "CSS Showcase",
+    "lead": "UI patterns, with the CSS that makes them work.",
+    "empty": "No patterns have been published yet. Check back soon.",
+    "backToList": "Back to CSS Showcase",
+    "sections": {
+      "preview": "Preview",
+      "learn": "What you will learn",
+      "html": "HTML",
+      "css": "CSS",
+      "howItWorks": "How it works",
+      "tags": "CSS tags"
+    }
   }
 }

@@ -30,5 +30,19 @@
       },
       "closing": "空いた時間には、素敵なカフェでスイーツを食べながらのんびりしたり、ゲームをしたりしています。"
     }
+  },
+  "cssShowcase": {
+    "heading": "CSS Showcase",
+    "lead": "UIパターンと、それを成り立たせているCSS。",
+    "empty": "まだ公開されているパターンはありません。",
+    "backToList": "CSS Showcase の一覧へ戻る",
+    "sections": {
+      "preview": "プレビュー",
+      "learn": "このパターンで学べること",
+      "html": "HTML",
+      "css": "CSS",
+      "howItWorks": "仕組み",
+      "tags": "CSS タグ"
+    }
   }
 }

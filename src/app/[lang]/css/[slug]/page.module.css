@@ -1,0 +1,47 @@
+.main {
+  padding: 0 var(--size-2);
+}
+
+.title {
+  margin: var(--size-3) 0 var(--size-1);
+}
+
+.description {
+  margin-bottom: var(--size-4);
+}
+
+.section {
+  margin-bottom: var(--size-5);
+  display: grid;
+  gap: var(--size-2);
+}
+
+.learningPoints,
+.tags {
+  display: grid;
+  gap: var(--size-1);
+  padding-left: var(--size-3);
+}
+
+.tags {
+  grid-auto-flow: column;
+  justify-content: start;
+  gap: var(--size-2);
+  padding-left: 0;
+  list-style: none;
+}
+
+.code {
+  overflow-x: auto;
+  padding: var(--size-2);
+  border-radius: var(--radius);
+  background: rgb(var(--card-background-rgb));
+  color: rgb(var(--card-foreground-rgb));
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+.explanation {
+  display: grid;
+  gap: var(--size-1);
+}

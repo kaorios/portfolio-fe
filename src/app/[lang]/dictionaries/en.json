@@ -1,38 +1,34 @@
 {
   "meta": {
-    "description": "I am Kaori, Software engineer."
+    "description": "Portfolio of Kaori, a software engineer."
   },
   "home": {
     "description": {
-      "aim": "My aim is to deliver efficient technological products to those in need of them, and then they receive good experience with the products and life will be better :)",
-      "focus": "These days, I focus on designing and architecting frontend code (also UI component libraries), building web applications using TypeScript, React, and Next.js(CSR, SSR) including unit tests, and building pleasant and effective teams."
+      "aim": "My aim is to deliver efficient tech products to the people who need them, so they can enjoy a great experience and their lives get a little better :)",
+      "focus": "I focus on designing and architecting frontend code (AI-friendly code, UI component libraries, and design systems), and on building pleasant, effective teams."
     },
     "principles": {
       "cleanCode": {
-        "heading": "Clean Code for Frontend",
-        "body": "Frontend engineers always white humble parts and business parts. To test what the company wants to do, write strong and easy-to-change code at heart. Bonus: the code would be easy to change even for those with little front-end knowledge."
-      },
-      "architecture": {
-        "heading": "Architecture...?",
-        "body": "I am learning the architectures. It will change depending on the size and division of the service, so I always want to come up with an architecture that I think is the best right now for each service."
+        "heading": "The Role of the Frontend",
+        "body": "I see the frontend as the interface between users and data. With that in mind, I aim to write code that is easy to extend and performs well. I also keep the codebase clean and well-structured, so the code stays high quality even when coding agents do the implementation."
       },
       "philosophy": {
         "heading": "Philosophy",
-        "body": "Release is always \"exciting\" for me. I continue to try to reduce the worry when releasing as much as possible. I want to strengthen our cooperation with automated testing and QA teams."
+        "body": "Releases are always a little nerve-wracking for me. I keep working to take as much of the worry out of releasing as I can, and I want to strengthen our collaboration with automated testing and QA teams."
       },
       "team": {
-        "heading": "Love Teams",
-        "body": "One of the important things when working is a Team for me. I believe that a good team can deliver a good product. What is a good team?, It depends on the teammates. For me, polite vibes, keep learning and improving, and work-life balance. I just want to hear, \"what is a good team for you?\"."
+        "heading": "Team Love",
+        "body": "For me, one of the most important things at work is the team. I believe a good team builds a good product. So what makes a good team? It depends on the people in it. For me, it's a kind and respectful atmosphere, continuous learning and improvement, and a healthy work-life balance. I'd love to hear from you: what makes a good team for you?"
       }
     },
     "extra": {
       "heading": "Extra",
-      "lead": "I am writing a tech blog and working a private project:",
+      "lead": "I write a tech blog and work on a personal project.",
       "links": {
         "blog": "Tech Blog (Japanese only)",
-        "suumiee": "Suumiee (Private Project)"
+        "suumiee": "Suumiee (Personal Project)"
       },
-      "closing": "In my free time, I relax in a lovely cafe with sweeeeets or play games."
+      "closing": "In my free time, I relax at a lovely café with sweeeeets or play video games."
     }
   }
 }

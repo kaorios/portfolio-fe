@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { describe, expect, it } from 'vitest';
-import { LOCALE_COOKIE_NAME } from './app/components/language-switch/const';
+import { LOCALE_COOKIE } from './cookies';
 import { proxy } from './proxy';
 
 const ORIGIN = 'https://kaorios.com';
@@ -14,7 +14,7 @@ const request = (path: string, acceptLanguage?: string, chosen?: string) =>
         : { 'accept-language': acceptLanguage }),
       ...(chosen === undefined
         ? {}
-        : { cookie: `${LOCALE_COOKIE_NAME}=${chosen}` }),
+        : { cookie: `${LOCALE_COOKIE.name}=${chosen}` }),
     },
   });
 

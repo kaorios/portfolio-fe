@@ -4,12 +4,9 @@ import Cookies from 'js-cookie';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import type { Locale } from '@/app/[lang]/dictionaries';
-import { LOCALE_COOKIE_NAME } from './const';
+import { LOCALE_COOKIE } from '@/cookies';
 import { LanguageSwitch } from './index';
 import { localeHref } from './path';
-
-/** A year: long enough that the choice outlives a browser restart. */
-const COOKIE_EXPIRY_DAYS = 365;
 
 interface Props {
   /** The locale the page was rendered in, from the `[lang]` segment. */
@@ -37,11 +34,7 @@ const LocaleSwitcher = ({ locale }: Props) => {
        * Only an explicit pick is remembered. Landing on `/ja` because the
        * browser asked for it is not a choice, so it must not overwrite one.
        */
-      Cookies.set(LOCALE_COOKIE_NAME, next, {
-        expires: COOKIE_EXPIRY_DAYS,
-        path: '/',
-        sameSite: 'lax',
-      });
+      Cookies.set(LOCALE_COOKIE.name, next, LOCALE_COOKIE.options);
 
       /*
        * `scroll: false`: it is the same page in another language, so the

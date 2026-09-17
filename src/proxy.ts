@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { LOCALE_COOKIE_NAME } from './app/components/language-switch/const';
+import { LOCALE_COOKIE } from './cookies';
 
 const locales = ['en', 'ja'] as const;
 const defaultLocale = 'en';
@@ -77,7 +77,7 @@ const getLocale = (request: NextRequest) => {
  * cookie — is ignored so the negotiation below stays in charge.
  */
 const getChosenLocale = (request: NextRequest) => {
-  const chosen = request.cookies.get(LOCALE_COOKIE_NAME)?.value;
+  const chosen = request.cookies.get(LOCALE_COOKIE.name)?.value;
   return chosen !== undefined && isLocale(chosen) ? chosen : undefined;
 };
 

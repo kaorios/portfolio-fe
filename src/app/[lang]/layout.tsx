@@ -1,5 +1,5 @@
 import { FirstLoading } from '@/app/components/first-loading';
-import { DISABLED_ANIMATION_COOKIE_NAME } from '@/app/components/first-loading/const';
+import { DISABLED_ANIMATION_COOKIE } from '@/cookies';
 import '../globals.css';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
@@ -48,7 +48,7 @@ export default async function RootLayout({ children }: LayoutProps<'/[lang]'>) {
   const locale = await getLocale();
   const cookieStore = await cookies();
   const disabledLoadingAnimation = cookieStore.get(
-    DISABLED_ANIMATION_COOKIE_NAME,
+    DISABLED_ANIMATION_COOKIE.name,
   )?.value;
 
   return (

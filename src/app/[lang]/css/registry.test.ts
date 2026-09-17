@@ -9,7 +9,6 @@ const pattern = (overrides: Partial<CssPattern> = {}): CssPattern => ({
   title: { ja: 'サンプル' },
   description: { ja: 'サンプルの説明' },
   tags: ['flexbox'],
-  learningPoints: [{ ja: 'flex での中央揃え' }],
   html: '<div class="sample">sample</div>',
   css: '.sample { display: flex; }',
   explanations: [{ heading: { ja: '仕組み' }, body: { ja: '本文' } }],
@@ -132,12 +131,6 @@ describe('createRegistry', () => {
       );
     });
 
-    it('lists no learning points', () => {
-      expect(() => createRegistry([pattern({ learningPoints: [] })])).toThrow(
-        /no learning points/,
-      );
-    });
-
     it('lists no explanations', () => {
       expect(() => createRegistry([pattern({ explanations: [] })])).toThrow(
         /no explanations/,
@@ -146,16 +139,8 @@ describe('createRegistry', () => {
 
     /*
      * A non-empty array is not the same as written prose: blanks pass the
-     * length check and reach the page as an empty bullet or heading.
+     * length check and reach the page as an empty heading.
      */
-    it('has a learning point with nothing written in it', () => {
-      const learningPoints = [{ ja: 'flex での中央揃え' }, { ja: '  ' }];
-
-      expect(() => createRegistry([pattern({ learningPoints })])).toThrow(
-        /learning point 2/,
-      );
-    });
-
     it('has an explanation with a blank heading', () => {
       const explanations = [{ heading: { ja: '' }, body: { ja: '本文' } }];
 

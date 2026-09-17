@@ -38,11 +38,15 @@
     "backToList": "Back to CSS Showcase",
     "sections": {
       "preview": "Preview",
-      "learn": "What you will learn",
       "html": "HTML",
       "css": "CSS",
       "howItWorks": "How it works",
-      "tags": "CSS tags"
+      "tags": "CSS used in this pattern"
+    },
+    "code": {
+      "copy": "Copy",
+      "copied": "Copied",
+      "failed": "Could not copy"
     }
   }
 }

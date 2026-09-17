@@ -63,7 +63,6 @@ and description in `<head>`.
      title: { ja: 'ホバーカード' },
      description: { ja: 'ポインタを乗せると浮き上がるカード。' },
      tags: ['transform', 'transition'],
-     learningPoints: [{ ja: 'transform はレイアウトを再計算させない' }],
      html: `<article class="card">…</article>`,
      css: `.card { … }`,
      explanations: [
@@ -82,7 +81,8 @@ and description in `<head>`.
 
 That is the whole workflow. Nothing under `src/app` changes: the listing and
 the detail template read whatever the registry hands them, so they render a
-new pattern without being touched.
+new pattern without being touched. `hover-card.ts` is the pattern to copy from:
+it is the one the showcase ships with.
 
 ### Fields
 
@@ -91,10 +91,64 @@ new pattern without being touched.
 | `slug` | The URL segment. Lowercase letters, digits, single hyphens. |
 | `title`, `description` | Shown on the listing and at the top of the detail page. |
 | `tags` | The CSS features on show. Displayed only — the listing does not filter. |
-| `learningPoints` | The "What you will learn" list. At least one. |
 | `html`, `css` | The pattern. Rendered in the preview *and* printed as the source. |
 | `explanations` | The "How it works" walkthrough. At least one. |
 | `preview.height` | Optional. The preview's height in pixels before it measures itself, up to 1200. |
+
+## The detail page
+
+Every pattern is rendered through `src/app/[lang]/css/[slug]/page.tsx`, in
+reading order: what the pattern is, what it looks like, the two pieces of
+source behind it, why they are written that way, and the CSS it rests on.
+
+| Section | What renders it |
+| --- | --- |
+| Title and description | The template itself |
+| Preview | `ShowcasePreview` (`preview.tsx`) |
+| HTML | `CodeBlock` (`code-block.tsx`) |
+| CSS | `CodeBlock` |
+| How it works | The template, from `explanations` |
+| CSS used in this pattern | `CssTagList` (`css-tag-list.tsx`) |
+
+The page carries two widths. The preview and the code get the wider one
+(1080px), so a pattern has room to behave the way it would in a real layout;
+prose gets the narrower one (760px), because a line of text that runs the full
+width is tiring to read. On a phone both collapse to the single column the
+screen has.
+
+One thing to know about the width: the layout's container
+(`src/app/[lang]/layout.module.css`) is a grid item with `auto` margins, so it
+wraps its content rather than filling the page. A percentage width on the page
+inside it would resolve against whatever the longest line of code happened to
+measure, which is why the template asks for its width outright and caps it
+against the viewport.
+
+### Code blocks
+
+`CodeBlock` prints one piece of source. It labels the language, highlights it,
+and gives it a copy control of its own, so the HTML and the CSS are copied
+separately.
+
+- **Highlighting** is `highlight.ts`, a tokenizer for these two languages and
+  nothing else. It runs on the server, so the code is coloured on a page that
+  never runs JavaScript, and it never throws: a pattern's source is content, so
+  whatever is written is coloured as best it can be. Its one known limit is CSS
+  nesting, where a nested selector is coloured as a declaration.
+- **Copying** is the only part of a block that runs in the browser. It reports
+  a failure as plainly
+  as a success — the clipboard is missing outside a secure context and can be
+  refused — because a control that claims a copy it never made leaves a visitor
+  pasting whatever they had copied before. The outcome is announced from a live
+  region beside the button rather than by renaming the button under anyone who
+  reached it by keyboard.
+- **Long code** scrolls inside the block, both ways, and the block stops at
+  `60vh` so the explanation underneath stays within reach. The scrolling
+  element carries a tab stop and a name, because a region that can only be
+  scrolled with a pointer cannot be read without one.
+
+`code-block.stories.tsx` holds the awkward cases — a line far wider than the
+page, a word with nowhere to break, a sheet longer than a screen, source the
+highlighter has to take as written, and nothing at all.
 
 ## How the preview stays honest
 
@@ -142,6 +196,13 @@ climb the page without ever settling. Fonts and images settle in a round or
 two, so four is room enough for the honest cases and short enough to stop that
 one quickly.
 
+The frame often finishes loading before the page hydrates, and a height nobody
+was listening for is never announced again — the observer drops a height it has
+already sent. So the parent asks: it posts a request into the frame as soon as
+it starts listening, and again whenever the frame loads, and the frame answers
+with the height as it stands. That is what makes the measurement independent of
+which of the two finished first.
+
 ## What a broken registration looks like
 
 `createRegistry()` checks every pattern while the module loads, and the pages
@@ -155,17 +216,16 @@ rename one of them in src/content/css-showcase/.
 
 It rejects a slug that would not survive a URL, a slug claimed twice, empty
 `html` or `css`, a `<script>`, inline `on…` handler or `javascript:` URL in the
-HTML, a closing
-style tag inside the CSS that would break out of the preview's style element
-(in any casing, since HTML tag names are case-insensitive), an empty
-`learningPoints` or `explanations`, a blank or repeated tag, and a preview
-height that is not a positive number or that is past the 1200px ceiling.
+HTML, a closing style tag inside the CSS that would break out of the preview's
+style element (in any casing, since HTML tag names are case-insensitive), an
+empty `explanations`, a blank or repeated tag, and a preview height that is not
+a positive number or that is past the 1200px ceiling.
 
 Prose is checked wherever it appears, not only at the top level: a blank title
-or description, and a blank learning point, explanation heading or explanation
-body, are each rejected by name — in the English as well as the Japanese. A list with an entry in it is not
+or description, and a blank explanation heading or body, are each rejected by
+name — in the English as well as the Japanese. A list with an entry in it is not
 the same as a list with something written in it, and the difference reaches a
-visitor as an empty bullet or a heading with nothing under it.
+visitor as a heading with nothing under it.
 
 `src/app/[lang]/css/registry.test.ts` covers each rule.
 
@@ -187,8 +247,12 @@ src/app/[lang]/css/
   [slug]/page.tsx     The detail template, shared by every pattern
   registry.ts         createRegistry: validation and slug lookup
   localized.tsx       Prose marked with the language it is actually in
-  preview.tsx         The sandboxed preview frame
+  preview.tsx         ShowcasePreview: the sandboxed preview frame
   preview-document.ts The document that frame renders
+  code-block.tsx      CodeBlock: one piece of source, labelled and copyable
+  copy-button.tsx     The copy control, and what it says about the outcome
+  css-tag-list.tsx    CssTagList: the CSS tags, as labels
+  highlight.ts        The tokenizer the code blocks colour with
 ```
 
 The schema sits with the content because it changes for the same reason the

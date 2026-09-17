@@ -1,0 +1,82 @@
+/*
+ * The card surface stays light in both colour schemes — `globals.css` keeps
+ * `--card-*` the same either way — so the code palette below is tuned once,
+ * against that light surface, rather than twice.
+ */
+.block {
+  display: grid;
+  border-radius: var(--radius);
+  background: rgb(var(--card-background-rgb));
+  color: rgb(var(--card-foreground-rgb));
+  overflow: hidden;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--size-2);
+  padding: var(--size-1) var(--size-2);
+  border-bottom: 1px solid rgb(var(--card-foreground-rgb), 0.1);
+}
+
+.language {
+  font-family: var(--font-family-h);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.code {
+  /*
+   * Both axes scroll inside the block: a long line is reachable without the
+   * page itself moving sideways, and a long file stops at a screenful so the
+   * prose after it stays within reach.
+   */
+  max-height: 60vh;
+  overflow: auto;
+  padding: var(--size-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  tab-size: 2;
+}
+
+.code pre {
+  /* The `pre` is only the text; the scrolling and the tab stop sit around it. */
+  font: inherit;
+  margin: 0;
+}
+
+.code:focus-visible {
+  outline: 2px solid rgb(var(--callout-rgb));
+  outline-offset: -2px;
+}
+
+.comment {
+  color: #6f6b78;
+  font-style: italic;
+}
+
+.punctuation {
+  color: #5b5761;
+}
+
+.tag,
+.selector {
+  color: #b01b53;
+}
+
+.attribute,
+.property {
+  color: #2a628f;
+}
+
+.string,
+.value {
+  color: #1a6b50;
+}
+
+.atRule {
+  color: #7a45ad;
+}

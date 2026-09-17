@@ -20,7 +20,7 @@ import {
  */
 const MAX_ADJUSTMENTS = 4;
 
-type PatternPreviewProps = {
+type ShowcasePreviewProps = {
   pattern: CssPattern;
   locale: Locale;
   /** Names the frame for anyone reading the page with a screen reader. */
@@ -33,12 +33,16 @@ type PatternPreviewProps = {
  * CSS cannot reach the page around it. `allow-scripts` is what lets the frame
  * measure itself; registration rejects a pattern carrying a script or an
  * inline handler, so the measurement is the only thing that runs in there.
+ *
+ * The frame fills the width it is given, and a frame is its own viewport, so a
+ * pattern's own media and container queries answer to the space the preview has
+ * rather than to the size of the window around it.
  */
-export const PatternPreview = ({
+export const ShowcasePreview = ({
   pattern,
   locale,
   title,
-}: PatternPreviewProps) => {
+}: ShowcasePreviewProps) => {
   const frame = useRef<HTMLIFrameElement>(null);
   /*
    * Held to the ceiling a measured height is held to. This is what a visitor

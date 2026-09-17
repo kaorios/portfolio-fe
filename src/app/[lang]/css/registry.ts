@@ -122,16 +122,6 @@ const validate = (
     );
   }
 
-  if (pattern.learningPoints.length === 0) {
-    reject(
-      `"${slug}" lists no learning points, so the detail page has nothing to put under "What you will learn".`,
-    );
-  }
-
-  pattern.learningPoints.forEach((point, index) => {
-    requireProse(slug, `text for learning point ${index + 1}`, point);
-  });
-
   if (pattern.explanations.length === 0) {
     reject(
       `"${slug}" has no explanations, so the detail page has nothing to put under "How it works".`,

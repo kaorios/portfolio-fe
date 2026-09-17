@@ -38,11 +38,15 @@
     "backToList": "CSS Showcase の一覧へ戻る",
     "sections": {
       "preview": "プレビュー",
-      "learn": "このパターンで学べること",
       "html": "HTML",
       "css": "CSS",
       "howItWorks": "仕組み",
-      "tags": "CSS タグ"
+      "tags": "このパターンで使っている CSS"
+    },
+    "code": {
+      "copy": "コピー",
+      "copied": "コピーしました",
+      "failed": "コピーできませんでした"
     }
   }
 }

@@ -6,6 +6,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { BackgroundStars } from '@/app/components/background-stars';
 import { GlobalNavLink } from '@/app/components/global-nav-link';
+import { LocaleSwitcher } from '@/app/components/language-switch/locale-switcher';
 import { Logo } from '@/app/components/logo';
 import { SocialLinks } from '@/app/components/social-links';
 import { fontVariables } from '@/app/fonts';
@@ -67,6 +68,7 @@ export default async function RootLayout({ children }: LayoutProps<'/[lang]'>) {
               </li>
             </ul>
             <SocialLinks />
+            <LocaleSwitcher locale={locale} />
           </nav>
         </header>
         <div className={styles.container}>{children}</div>

@@ -107,8 +107,8 @@ export const hoverCard = definePattern({
         en: 'Move it with transform',
       },
       body: {
-        ja: 'カードを浮かせるのに margin や top を動かすと、そのたびにブラウザはレイアウトを計算し直し、周りの要素まで押しのけてしまいます。transform: translateY() は合成の段階だけで完結するので、レイアウトは 1 ミリも動きません。box-shadow を一緒に濃くすると、持ち上がった分の影が伸びたように見えます。',
-        en: 'Nudging a card with `margin` or `top` makes the browser lay the page out again on every frame, and pushes whatever sits beside the card. `transform: translateY()` is handled at composite time instead, so nothing around it moves. Deepening the `box-shadow` at the same time reads as the card having risen off the page.',
+        ja: 'カードを浮かせるのに margin を動かすと、そのたびにブラウザはレイアウトを計算し直し、周りの要素まで押しのけてしまいます。position: relative の top なら、元の場所は流れの中に残るので周りは動きませんが、それでも毎フレーム レイアウトの段階を通ります。transform: translateY() は合成の段階だけで完結するので、レイアウトには一切触れません。box-shadow を一緒に濃くすると、持ち上がった分の影が伸びたように見えます。',
+        en: 'Nudging a card with `margin` makes the browser lay the page out again on every frame, and pushes whatever sits beside it aside. `top` on a relatively positioned card leaves its neighbours where they were — the space it started in stays in the flow — but still goes through layout on every frame. `transform: translateY()` is handled at composite time instead, so it never touches layout at all. Deepening the `box-shadow` at the same time reads as the card having risen off the page.',
       },
     },
     {
@@ -127,8 +127,8 @@ export const hoverCard = definePattern({
         en: 'For anyone who asked for less motion',
       },
       body: {
-        ja: 'prefers-reduced-motion: reduce は、OS で「視差効果を減らす」を選んでいる人に届く問い合わせです。この指定を尊重して transition を切っても、色と影の変化は残るので、ホバーしていることはちゃんと伝わります。動きを消すのであって、フィードバックを消すのではありません。',
-        en: '`prefers-reduced-motion: reduce` carries a preference the visitor set in their operating system. Dropping the transition still leaves the shadow and the colour change, so the card is as clearly hovered as before: what goes is the movement, not the feedback.',
+        ja: 'prefers-reduced-motion: reduce は、OS で「視差効果を減らす」を選んでいる人に届く問い合わせです。この指定を尊重して transition を切っても、浮き上がりも影の深さもそのまま残ります。違うのは 200ms かけて動くかどうかだけなので、ホバーしていることはちゃんと伝わります。動きを消すのであって、フィードバックを消すのではありません。',
+        en: '`prefers-reduced-motion: reduce` carries a preference the visitor set in their operating system. Dropping the transition keeps both the lift and the deeper shadow — they simply arrive at once rather than over 200ms — so the card is as clearly hovered as before: what goes is the movement, not the feedback.',
       },
     },
   ],

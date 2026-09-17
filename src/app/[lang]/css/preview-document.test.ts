@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { CssPattern } from '@/content/css-showcase/pattern';
 import {
+  DEFAULT_PREVIEW_HEIGHT,
+  MAX_MEASURED_PREVIEW_HEIGHT,
   PREVIEW_HEIGHT_MESSAGE,
   PREVIEW_MEASURE_MESSAGE,
   previewDocument,
+  previewHeightFor,
 } from './preview-document';
 
 const pattern: CssPattern = {
@@ -44,5 +47,34 @@ describe('previewDocument', () => {
   it('declares the document in the locale it is being read in', () => {
     expect(previewDocument(pattern, 'en')).toContain('<html lang="en">');
     expect(previewDocument(pattern, 'ja')).toContain('<html lang="ja">');
+  });
+});
+
+describe('previewHeightFor', () => {
+  it('takes the measured height, rounded up to a whole pixel', () => {
+    expect(previewHeightFor(210.2, DEFAULT_PREVIEW_HEIGHT)).toBe(211);
+  });
+
+  /*
+   * A pattern sized to the frame's own viewport grows every time the frame
+   * grows to fit it. The ceiling is what settles that: the next report clamps
+   * to the same height, and nothing changes after it.
+   */
+  it('stops a measurement that feeds itself at the ceiling', () => {
+    const first = previewHeightFor(4000, DEFAULT_PREVIEW_HEIGHT);
+    const next = previewHeightFor(first + 32, DEFAULT_PREVIEW_HEIGHT);
+
+    expect(first).toBe(MAX_MEASURED_PREVIEW_HEIGHT);
+    expect(next).toBe(first);
+  });
+
+  it('never pulls a preview below the height its pattern declared', () => {
+    const declared = MAX_MEASURED_PREVIEW_HEIGHT + 400;
+
+    expect(previewHeightFor(declared, declared)).toBe(declared);
+  });
+
+  it('still shrinks to fit a pattern smaller than it started', () => {
+    expect(previewHeightFor(120, DEFAULT_PREVIEW_HEIGHT)).toBe(120);
   });
 });

@@ -9,6 +9,7 @@ import {
   PREVIEW_HEIGHT_MESSAGE,
   PREVIEW_MEASURE_MESSAGE,
   previewDocument,
+  previewHeightFor,
 } from './preview-document';
 
 type ShowcasePreviewProps = {
@@ -34,9 +35,8 @@ export const ShowcasePreview = ({
   title,
 }: ShowcasePreviewProps) => {
   const frame = useRef<HTMLIFrameElement>(null);
-  const [height, setHeight] = useState(
-    pattern.preview?.height ?? DEFAULT_PREVIEW_HEIGHT,
-  );
+  const declaredHeight = pattern.preview?.height ?? DEFAULT_PREVIEW_HEIGHT;
+  const [height, setHeight] = useState(declaredHeight);
   const source = useMemo(
     () => previewDocument(pattern, locale),
     [pattern, locale],
@@ -60,7 +60,7 @@ export const ShowcasePreview = ({
       const { type, height } = event.data ?? {};
       if (type !== PREVIEW_HEIGHT_MESSAGE || typeof height !== 'number') return;
 
-      setHeight(Math.ceil(height));
+      setHeight(previewHeightFor(height, declaredHeight));
     };
 
     window.addEventListener('message', onMessage);
@@ -72,7 +72,7 @@ export const ShowcasePreview = ({
     askForHeight();
 
     return () => window.removeEventListener('message', onMessage);
-  }, [askForHeight]);
+  }, [askForHeight, declaredHeight]);
 
   return (
     <iframe

@@ -98,6 +98,24 @@ describe('highlight', () => {
       ]);
     });
 
+    it('keeps a `;` and a `}` inside a quoted value out of the structure', () => {
+      const code = '.label { content: ";}"; color: red; }';
+
+      expect(of(code, 'css', 'property')).toEqual(['content', 'color']);
+      expect(of(code, 'css', 'value')).toEqual(['";}"', 'red']);
+      expect(of(code, 'css', 'selector')).toEqual(['.label']);
+    });
+
+    it('reads an escaped quote as part of its string', () => {
+      const code = String.raw`.a { content: "she said \"hi\""; color: red; }`;
+
+      expect(of(code, 'css', 'property')).toEqual(['content', 'color']);
+      expect(of(code, 'css', 'value')).toEqual([
+        String.raw`"she said \"hi\""`,
+        'red',
+      ]);
+    });
+
     it('takes a comment whole, braces and all', () => {
       const code = '/* .old { display: none; } */ .a { color: red; }';
 
@@ -139,6 +157,8 @@ describe('highlight', () => {
       ['a stray closing brace', '}}}'],
       ['a declaration with no value', '.a { color: }'],
       ['a lone colon', ':'],
+      ['an unclosed string', '.a { content: "never ends'],
+      ['a rule hiding inside a string', '.a { content: ";}"; }'],
     ])('rebuilds the CSS exactly: %s', (_, code) => {
       expect(rebuilt(code, 'css')).toBe(code);
     });

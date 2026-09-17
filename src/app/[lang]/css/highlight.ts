@@ -182,9 +182,13 @@ const contextInside = (prelude: string): CssContext => {
 };
 
 /**
- * Where the current run of text ends. The search starts one past `from` because
- * the caller has already dealt with a boundary sitting there, and starting late
- * is what guarantees the scanner moves forward.
+ * Where the current run of text ends. A boundary sitting on `from` itself is
+ * ignored, because the caller has already dealt with it and reading past it is
+ * what guarantees the scanner moves forward.
+ *
+ * Quoted text is skipped whole. `content: ";}"` is a string, not the end of a
+ * declaration and then of a rule, and mistaking it for one throws the colouring
+ * of everything after it out of step.
  */
 const nextBoundary = (
   code: string,
@@ -192,13 +196,36 @@ const nextBoundary = (
   context: CssContext,
   inValue: boolean,
 ) => {
-  for (let i = from + 1; i < code.length; i += 1) {
+  let quote: string | undefined;
+  let i = from;
+
+  while (i < code.length) {
     const char = code[i];
 
-    if (char === '{' || char === '}' || char === ';') return i;
-    if (char === '/' && code[i + 1] === '*') return i;
-    /* A `:` opens a value in a declaration, but joins `a:hover` in a selector. */
-    if (char === ':' && context === 'declarations' && !inValue) return i;
+    if (quote) {
+      if (char === '\\') {
+        i += 2;
+        continue;
+      }
+      if (char === quote) quote = undefined;
+      i += 1;
+      continue;
+    }
+
+    if (char === '"' || char === "'") {
+      quote = char;
+      i += 1;
+      continue;
+    }
+
+    if (i > from) {
+      if (char === '{' || char === '}' || char === ';') return i;
+      if (char === '/' && code[i + 1] === '*') return i;
+      /* A `:` opens a value in a declaration, but joins `a:hover` in a selector. */
+      if (char === ':' && context === 'declarations' && !inValue) return i;
+    }
+
+    i += 1;
   }
 
   return code.length;

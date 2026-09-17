@@ -4,6 +4,30 @@ import type { CssPattern } from '@/content/css-showcase/pattern';
 /** The height a preview starts at when its pattern does not declare one. */
 export const DEFAULT_PREVIEW_HEIGHT = 240;
 
+/**
+ * How tall a measured preview is allowed to grow. A preview is a demo rather
+ * than a page: past this it scrolls inside its own frame.
+ */
+export const MAX_MEASURED_PREVIEW_HEIGHT = 960;
+
+/**
+ * The height to give the frame for a height it just reported.
+ *
+ * The ceiling is what ends a measurement that feeds itself. A pattern sized to
+ * the frame's own viewport — a `100vh` child, say — is taller every time the
+ * frame grows to fit it, and the observer reports the new height, and so on
+ * without end. Clamping settles it: the frame stops growing, the next report
+ * clamps to the same height, and nothing changes after that.
+ *
+ * A pattern that declares a taller height meant it, so the ceiling never pulls
+ * a preview below what its author asked for.
+ */
+export const previewHeightFor = (measured: number, declared: number) =>
+  Math.min(
+    Math.ceil(measured),
+    Math.max(MAX_MEASURED_PREVIEW_HEIGHT, declared),
+  );
+
 /** Names the one message the preview frame is allowed to send its parent. */
 export const PREVIEW_HEIGHT_MESSAGE = 'css-showcase:preview-height';
 

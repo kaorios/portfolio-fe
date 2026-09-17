@@ -14,3 +14,22 @@ export const localePath = (pathname: string, current: Locale, next: Locale) => {
 
   return `/${[next, ...segments].join('/')}`;
 };
+
+/**
+ * Where the switch actually navigates: `localePath` with the query string
+ * carried over. `usePathname()` reports the path alone, so building the
+ * destination from it would drop the rest of the URL — switching language on
+ * `/en/works?ref=campaign` would silently lose `ref`.
+ */
+export const localeHref = (
+  pathname: string,
+  search: string,
+  current: Locale,
+  next: Locale,
+) => {
+  /* Normalises a leading `?`, so either form of `search` works. */
+  const query = new URLSearchParams(search).toString();
+  const path = localePath(pathname, current, next);
+
+  return query ? `${path}?${query}` : path;
+};

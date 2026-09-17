@@ -1,12 +1,12 @@
 'use client';
 
 import Cookies from 'js-cookie';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import type { Locale } from '@/app/[lang]/dictionaries';
 import { LOCALE_COOKIE_NAME } from './const';
 import { LanguageSwitch } from './index';
-import { localePath } from './path';
+import { localeHref } from './path';
 
 /** A year: long enough that the choice outlives a browser restart. */
 const COOKIE_EXPIRY_DAYS = 365;
@@ -27,6 +27,7 @@ interface Props {
 const LocaleSwitcher = ({ locale }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const handleSelect = useCallback(
     (next: Locale) => {
@@ -46,9 +47,11 @@ const LocaleSwitcher = ({ locale }: Props) => {
        * `scroll: false`: it is the same page in another language, so the
        * position the visitor was reading at is still the one they want.
        */
-      router.push(localePath(pathname, locale, next), { scroll: false });
+      router.push(localeHref(pathname, searchParams.toString(), locale, next), {
+        scroll: false,
+      });
     },
-    [locale, pathname, router],
+    [locale, pathname, router, searchParams],
   );
 
   return <LanguageSwitch locale={locale} onSelect={handleSelect} />;

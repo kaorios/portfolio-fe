@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { CssPattern } from '@/content/css-showcase/pattern';
-import { PREVIEW_HEIGHT_MESSAGE, previewDocument } from './preview-document';
+import {
+  PREVIEW_HEIGHT_MESSAGE,
+  PREVIEW_MEASURE_REQUEST,
+  previewDocument,
+} from './preview-document';
 
 const pattern: CssPattern = {
   slug: 'sample-pattern',
@@ -32,5 +36,16 @@ describe('previewDocument', () => {
   it('declares the document in the locale it is being read in', () => {
     expect(previewDocument(pattern, 'en')).toContain('<html lang="en">');
     expect(previewDocument(pattern, 'ja')).toContain('<html lang="ja">');
+  });
+});
+
+describe('the measurement it carries', () => {
+  /*
+   * The document can finish loading before the parent has its listener on, so
+   * the frame has to answer a request for a measurement as well as volunteer
+   * one.
+   */
+  it('answers a measurement requested by the parent', () => {
+    expect(previewDocument(pattern, 'ja')).toContain(PREVIEW_MEASURE_REQUEST);
   });
 });

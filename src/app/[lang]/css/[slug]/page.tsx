@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { textFor } from '@/content/css-showcase/pattern';
 import { alternatesFor } from '../../alternates';
 import { getDictionary, getLocale } from '../../dictionaries';
+import { Localized } from '../localized';
 import { PatternPreview } from '../preview';
 import { registry } from '../registry';
 import styles from './page.module.css';
@@ -50,9 +51,11 @@ export default async function CssPatternPage({
 
   return (
     <main className={styles.main}>
-      <h1 className={styles.title}>{title}</h1>
+      <h1 className={styles.title}>
+        <Localized text={pattern.title} locale={locale} />
+      </h1>
       <p className={styles.description}>
-        {textFor(pattern.description, locale)}
+        <Localized text={pattern.description} locale={locale} />
       </p>
 
       <section className={styles.section}>
@@ -64,7 +67,9 @@ export default async function CssPatternPage({
         <h2>{sections.learn}</h2>
         <ul className={styles.learningPoints}>
           {pattern.learningPoints.map((point) => (
-            <li key={point.ja}>{textFor(point, locale)}</li>
+            <li key={point.ja}>
+              <Localized text={point} locale={locale} />
+            </li>
           ))}
         </ul>
       </section>
@@ -87,8 +92,12 @@ export default async function CssPatternPage({
         <h2>{sections.howItWorks}</h2>
         {pattern.explanations.map((explanation) => (
           <div key={explanation.heading.ja} className={styles.explanation}>
-            <h3>{textFor(explanation.heading, locale)}</h3>
-            <p>{textFor(explanation.body, locale)}</p>
+            <h3>
+              <Localized text={explanation.heading} locale={locale} />
+            </h3>
+            <p>
+              <Localized text={explanation.body} locale={locale} />
+            </p>
           </div>
         ))}
       </section>

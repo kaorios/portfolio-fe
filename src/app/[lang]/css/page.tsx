@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { textFor } from '@/content/css-showcase/pattern';
 import { alternatesFor } from '../alternates';
 import { getDictionary, getLocale } from '../dictionaries';
+import { Localized } from './localized';
 import styles from './page.module.css';
 import { registry } from './registry';
 
@@ -37,9 +37,11 @@ export default async function CssShowcase() {
           {patterns.map((pattern) => (
             <li key={pattern.slug} className={styles.item}>
               <Link href={`/${locale}/css/${pattern.slug}`}>
-                {textFor(pattern.title, locale)}
+                <Localized text={pattern.title} locale={locale} />
               </Link>
-              <p>{textFor(pattern.description, locale)}</p>
+              <p>
+                <Localized text={pattern.description} locale={locale} />
+              </p>
             </li>
           ))}
         </ul>

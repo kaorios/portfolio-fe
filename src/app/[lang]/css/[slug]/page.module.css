@@ -16,18 +16,19 @@
   gap: var(--size-2);
 }
 
-.learningPoints,
-.tags {
+.learningPoints {
   display: grid;
   gap: var(--size-1);
   padding-left: var(--size-3);
 }
 
+/* Wraps, because a row of tags is wider than a phone and the page hides its
+   horizontal overflow, which would cut the last of them off rather than
+   letting anyone reach them. */
 .tags {
-  grid-auto-flow: column;
-  justify-content: start;
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--size-2);
-  padding-left: 0;
   list-style: none;
 }
 

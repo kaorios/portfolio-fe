@@ -96,9 +96,14 @@ describe('createRegistry', () => {
       expect(() => createRegistry([pattern({ css: '' })])).toThrow(/no CSS/);
     });
 
-    it('closes the preview style element from inside the CSS', () => {
-      const css = '.sample { color: red; }</style><script>alert(1)</script>';
-
+    it.each([
+      ['lowercase', '.sample { color: red; }</style><script>alert(1)</script>'],
+      ['uppercase', '.sample { color: red; }</STYLE><script>alert(1)</script>'],
+      [
+        'mixed case',
+        '.sample { color: red; }</Style><script>alert(1)</script>',
+      ],
+    ])('closes the preview style element in %s', (_, css) => {
       expect(() => createRegistry([pattern({ css })])).toThrow(
         /break out of the preview/,
       );
@@ -113,6 +118,46 @@ describe('createRegistry', () => {
     it('lists no explanations', () => {
       expect(() => createRegistry([pattern({ explanations: [] })])).toThrow(
         /no explanations/,
+      );
+    });
+
+    /*
+     * A non-empty array is not the same as written prose: blanks pass the
+     * length check and reach the page as an empty bullet or heading.
+     */
+    it('has a learning point with nothing written in it', () => {
+      const learningPoints = [{ ja: 'flex での中央揃え' }, { ja: '  ' }];
+
+      expect(() => createRegistry([pattern({ learningPoints })])).toThrow(
+        /learning point 2/,
+      );
+    });
+
+    it('has an explanation with a blank heading', () => {
+      const explanations = [{ heading: { ja: '' }, body: { ja: '本文' } }];
+
+      expect(() => createRegistry([pattern({ explanations })])).toThrow(
+        /heading for explanation 1/,
+      );
+    });
+
+    it('has an explanation with a blank body', () => {
+      const explanations = [{ heading: { ja: '仕組み' }, body: { ja: ' ' } }];
+
+      expect(() => createRegistry([pattern({ explanations })])).toThrow(
+        /body for explanation 1/,
+      );
+    });
+
+    it('leaves out the Japanese description', () => {
+      expect(() =>
+        createRegistry([pattern({ description: { ja: '' } })]),
+      ).toThrow(/no Japanese description/);
+    });
+
+    it('lists a blank tag', () => {
+      expect(() => createRegistry([pattern({ tags: ['grid', ' '] })])).toThrow(
+        /tag that is blank/,
       );
     });
 

@@ -4,8 +4,20 @@ import type { CssPattern } from '@/content/css-showcase/pattern';
 /** The height a preview starts at when its pattern does not declare one. */
 export const DEFAULT_PREVIEW_HEIGHT = 240;
 
+/**
+ * As tall as a preview is ever allowed to grow. A pattern sized against the
+ * viewport — `min-height: 100vh` and the like — measures taller than the frame
+ * it is in, so every height we apply produces a taller measurement and the
+ * frame would climb the page forever. The ceiling ends that, and the limit on
+ * how many times the parent resizes ends it quickly.
+ */
+export const MAX_PREVIEW_HEIGHT = 1200;
+
 /** Names the one message the preview frame is allowed to send its parent. */
 export const PREVIEW_HEIGHT_MESSAGE = 'css-showcase:preview-height';
+
+/** Asks the frame to measure itself again, and to report even an unchanged height. */
+export const PREVIEW_MEASURE_REQUEST = 'css-showcase:measure';
 
 /**
  * The preview runs in its own document, so it inherits nothing from the site.
@@ -29,6 +41,11 @@ const RESET = `
  * `allow-same-origin` and so cannot learn the parent's origin; the message
  * carries a number and nothing else. Unchanged heights are dropped, otherwise
  * resizing the frame would feed the observer that asked for the resize.
+ *
+ * The parent can also ask for a measurement. This document can finish loading
+ * before the parent has its listener attached, and a pattern that never moves
+ * again produces no second observation, so without that request the one report
+ * would be lost and the frame would stay at its starting height.
  */
 const MEASURE = `
   let reported = 0;
@@ -38,6 +55,11 @@ const MEASURE = `
     reported = height;
     parent.postMessage({ type: ${JSON.stringify(PREVIEW_HEIGHT_MESSAGE)}, height }, '*');
   };
+  addEventListener('message', (event) => {
+    if (event.data !== ${JSON.stringify(PREVIEW_MEASURE_REQUEST)}) return;
+    reported = 0;
+    report();
+  });
   new ResizeObserver(report).observe(document.body);
   addEventListener('load', report);
 `;

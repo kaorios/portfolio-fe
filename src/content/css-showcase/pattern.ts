@@ -55,3 +55,12 @@ export type CssPattern = {
  * is reported in the pattern's own module rather than in the registry.
  */
 export const definePattern = (pattern: CssPattern) => pattern;
+
+/**
+ * The locale the text will actually be read in, which is not always the one
+ * asked for: English that has not been written yet is answered with Japanese.
+ * A page has to say so, or a screen reader on the English page pronounces the
+ * Japanese with English rules.
+ */
+export const languageOf = (text: LocalizedText, locale: Locale): Locale =>
+  text[locale] === undefined ? 'ja' : locale;

@@ -1,5 +1,5 @@
 import { patterns as published } from '@/content/css-showcase';
-import type { CssPattern } from '@/content/css-showcase/pattern';
+import type { CssPattern, LocalizedText } from '@/content/css-showcase/pattern';
 
 /** Slugs become URL segments, so they are held to what reads well as one. */
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -12,6 +12,19 @@ const isBlank = (value: string) => value.trim().length === 0;
  */
 const reject = (message: string): never => {
   throw new Error(`css-showcase: ${message}`);
+};
+
+/**
+ * Prose is only as present as its Japanese. A page renders the Japanese
+ * wherever the English is missing, so a blank Japanese string reaches a
+ * visitor as an empty heading or a bullet with nothing in it.
+ */
+const requireProse = (slug: string, label: string, text: LocalizedText) => {
+  if (isBlank(text.ja)) {
+    reject(
+      `"${slug}" has no Japanese ${label}. Japanese is the language patterns are written in; English is the optional one.`,
+    );
+  }
 };
 
 const validate = (
@@ -33,15 +46,8 @@ const validate = (
     );
   }
 
-  if (isBlank(pattern.title.ja)) {
-    reject(
-      `"${slug}" has no Japanese title. Japanese is the language patterns are written in; English is the optional one.`,
-    );
-  }
-
-  if (isBlank(pattern.description.ja)) {
-    reject(`"${slug}" has no Japanese description.`);
-  }
+  requireProse(slug, 'title', pattern.title);
+  requireProse(slug, 'description', pattern.description);
 
   if (isBlank(pattern.html)) {
     reject(
@@ -58,9 +64,10 @@ const validate = (
   /*
    * The CSS is inlined into a <style> element in the preview document. A
    * closing tag inside it would end that element early and spill the rest of
-   * the pattern onto the preview as text.
+   * the pattern onto the preview as markup. Tag names are case-insensitive, so
+   * "</STYLE>" ends the element every bit as much as "</style>" does.
    */
-  if (pattern.css.includes('</style')) {
+  if (pattern.css.toLowerCase().includes('</style')) {
     reject(
       `"${slug}" has "</style" inside its CSS, which would break out of the preview's style element. Escape it, or move that rule out of the pattern.`,
     );
@@ -72,10 +79,28 @@ const validate = (
     );
   }
 
+  pattern.learningPoints.forEach((point, index) => {
+    requireProse(slug, `text for learning point ${index + 1}`, point);
+  });
+
   if (pattern.explanations.length === 0) {
     reject(
       `"${slug}" has no explanations, so the detail page has nothing to put under "How it works".`,
     );
+  }
+
+  pattern.explanations.forEach((explanation, index) => {
+    requireProse(
+      slug,
+      `heading for explanation ${index + 1}`,
+      explanation.heading,
+    );
+    requireProse(slug, `body for explanation ${index + 1}`, explanation.body);
+  });
+
+  const blankTag = pattern.tags.find(isBlank);
+  if (blankTag !== undefined) {
+    reject(`"${slug}" lists a tag that is blank.`);
   }
 
   const duplicateTag = pattern.tags.find(

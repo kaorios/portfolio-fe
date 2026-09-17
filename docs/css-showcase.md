@@ -39,6 +39,13 @@ description: { ja: '……' },                        // Japanese only, for now
 half would contradict the `hreflang` links the page already advertises, and
 would give a visitor a `404` on a page that exists. Fall back, do not hide.
 
+Fallback text is marked with the language it is actually in. Japanese standing
+in for a missing translation is rendered inside `<span lang="ja">`, so a screen
+reader on the English page announces it with Japanese pronunciation rules
+rather than English ones. Pages render prose through `<Localized>` for this;
+`textFor()` is for the places that take a bare string, such as the page title
+and description in `<head>`.
+
 ## Adding a pattern
 
 1. Write `src/content/css-showcase/<slug>.ts`:
@@ -107,8 +114,16 @@ it out. So:
 - **Anything taller** should declare it. Otherwise the preview visibly jumps to
   size on load, and stays clipped at 240px where scripts are blocked.
 
-A declared height is a starting point, not a cap; the measurement can grow or
-shrink the frame from there.
+A declared height is where the frame starts, and the measurement grows or
+shrinks it from there — within limits. The frame never grows past 1200px, and
+a measurement resizes it at most four times.
+
+Both limits exist for the same reason. A pattern sized against the viewport,
+such as one with `min-height: 100vh`, measures taller than the frame holding
+it: every height applied produces a taller measurement, and the frame would
+climb the page without ever settling. Fonts and images settle in a round or
+two, so four is room enough for the honest cases and short enough to stop that
+one quickly.
 
 ## What a broken registration looks like
 
@@ -121,11 +136,19 @@ Error: css-showcase: the slug "hover-card" is registered twice, by
 rename one of them in src/content/css-showcase/.
 ```
 
-It rejects a slug that would not survive a URL, a slug claimed twice, missing
-Japanese prose, empty `html` or `css`, a `</style` inside the CSS that would
-break out of the preview's style element, an empty `learningPoints` or
-`explanations`, a repeated tag, and a preview height that is not a positive
-number. `src/app/[lang]/css/registry.test.ts` covers each one.
+It rejects a slug that would not survive a URL, a slug claimed twice, empty
+`html` or `css`, a closing style tag inside the CSS that would break out of the
+preview's style element (in any casing, since HTML tag names are
+case-insensitive), an empty `learningPoints` or `explanations`, a blank or
+repeated tag, and a preview height that is not a positive number.
+
+Japanese prose is checked wherever it appears, not only at the top level: a
+blank title or description, and a blank learning point, explanation heading or
+explanation body, are each rejected by name. A list with an entry in it is not
+the same as a list with something written in it, and the difference reaches a
+visitor as an empty bullet or a heading with nothing under it.
+
+`src/app/[lang]/css/registry.test.ts` covers each rule.
 
 An **empty registry is valid**: the listing renders its empty state and no
 detail routes are generated.
@@ -142,6 +165,7 @@ src/app/[lang]/css/
   page.tsx            The listing
   [slug]/page.tsx     The detail template, shared by every pattern
   registry.ts         createRegistry: validation and slug lookup
+  localized.tsx       Prose marked with the language it is actually in
   preview.tsx         The sandboxed preview frame
   preview-document.ts The document that frame renders
 ```

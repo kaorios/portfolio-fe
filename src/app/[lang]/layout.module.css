@@ -17,9 +17,23 @@
   text-transform: uppercase;
   width: 100%;
   display: flex;
+  /*
+   * The header has no room to spare once the language switch is in it, and the
+   * page is `overflow-x: hidden`, so anything pushed past the edge would be
+   * unreachable rather than merely off-screen. Wrapping onto a second row
+   * keeps every control clickable on narrow phones.
+   */
+  flex-wrap: wrap;
   gap: var(--size-3);
   justify-content: flex-end;
   align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+  .globalNav {
+    /* A tighter gap buys back the switch's width, so most phones stay on one row. */
+    gap: var(--size-1);
+  }
 }
 
 .globalNav ul {

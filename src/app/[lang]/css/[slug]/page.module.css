@@ -1,0 +1,48 @@
+.main {
+  padding: 0 var(--size-2);
+}
+
+.title {
+  margin: var(--size-3) 0 var(--size-1);
+}
+
+.description {
+  margin-bottom: var(--size-4);
+}
+
+.section {
+  margin-bottom: var(--size-5);
+  display: grid;
+  gap: var(--size-2);
+}
+
+.learningPoints {
+  display: grid;
+  gap: var(--size-1);
+  padding-left: var(--size-3);
+}
+
+/* Wraps, because a row of tags is wider than a phone and the page hides its
+   horizontal overflow, which would cut the last of them off rather than
+   letting anyone reach them. */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2);
+  list-style: none;
+}
+
+.code {
+  overflow-x: auto;
+  padding: var(--size-2);
+  border-radius: var(--radius);
+  background: rgb(var(--card-background-rgb));
+  color: rgb(var(--card-foreground-rgb));
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+.explanation {
+  display: grid;
+  gap: var(--size-1);
+}

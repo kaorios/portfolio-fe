@@ -11,7 +11,6 @@ const pattern: CssPattern = {
   title: { ja: 'サンプル' },
   description: { ja: 'サンプルの説明' },
   tags: [],
-  learningPoints: [{ ja: 'flex での中央揃え' }],
   html: '<div class="sample">sample</div>',
   css: '.sample { display: flex; }',
   explanations: [{ heading: { ja: '仕組み' }, body: { ja: '本文' } }],

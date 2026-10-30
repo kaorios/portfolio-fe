@@ -19,7 +19,7 @@
     "@types/node": "24.13.3",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
-    "classnames": "^2.3.2",
+    "classnames": "^2.5.1",
     "js-cookie": "^3.0.8",
     "next": "16.4.1",
     "react": "19.2.8",
@@ -29,12 +29,12 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.10",
-    "@storybook/addon-links": "^10.2.17",
-    "@storybook/addon-onboarding": "^10.2.17",
-    "@storybook/nextjs": "^10.2.17",
-    "@types/js-cookie": "^3.0.3",
-    "storybook": "^10.6.2",
-    "vitest": "^4.1.11"
+    "@storybook/addon-links": "^10.6.5",
+    "@storybook/addon-onboarding": "^10.6.5",
+    "@storybook/nextjs": "^10.6.5",
+    "@types/js-cookie": "^3.0.6",
+    "storybook": "^10.6.5",
+    "vitest": "^4.1.12"
   },
   "packageManager": "pnpm@11.24.0+sha512.bd27e345e976dcb0be0b7a1228217b049a817e21b1f355c90dbe7dc46671895a8bc1e6d06c24554505ea93ea0b45f489a27ec1bfbc8de6a9659fca0f16fa0000"
 }

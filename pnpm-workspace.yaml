@@ -8,3 +8,5 @@ overrides:
 allowBuilds:
   core-js-pure: false
   esbuild: false
+
+minimumReleaseAge: 4320

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/nextjs';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { hoverCard } from '@/content/css-showcase/hover-card';
 import type { CssPattern } from '@/content/css-showcase/pattern';
 import { ShowcasePreview } from './preview';

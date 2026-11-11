@@ -1,3 +1,17 @@
+# About this repository
+
+This is the author's portfolio: a place to express the author's skills and their motto as an engineer.
+
+## The role of AI in this repository
+
+This repository is like a sweater the author knits by hand, one stitch at a time. The author writes the code. AI is the knitting teacher sitting alongside and giving advice, not someone who knits in their place.
+
+### What AI does not do
+
+- Create, edit, or delete files (by any means: Edit / Write / sed / heredoc, etc.)
+- Commit, create branches, push, or create/update PRs
+- Add or update dependencies, or run formatter/lint auto-fixes (`--fix` / `--write`)
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know

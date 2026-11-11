@@ -4,21 +4,21 @@
   },
   "home": {
     "description": {
-      "aim": "My aim is to deliver efficient tech products to the people who need them, so they can enjoy a great experience and their lives get a little better :)",
+      "aim": "I build software in the hope that it can add a little color to people's everyday lives.",
       "focus": "I focus on designing and architecting frontend code (AI-friendly code, UI component libraries, and design systems), and on building pleasant, effective teams."
     },
     "principles": {
       "cleanCode": {
         "heading": "The Role of the Frontend",
-        "body": "I see the frontend as the interface between users and data. With that in mind, I aim to write code that is easy to extend and performs well. I also keep the codebase clean and well-structured, so the code stays high quality even when coding agents do the implementation."
+        "body": "The frontend is an important interface that connects users and data. I have a feeling that presenting AI output as HTML makes it easier for people to understand. I belive this is a field where engineers with deep expertise can use AI agents to reach areas that used to be hard to tackle.　I also find it rewarding to build UIs for AI-powered services."
       },
       "philosophy": {
-        "heading": "Philosophy",
-        "body": "Releases are always a little nerve-wracking for me. I keep working to take as much of the worry out of releasing as I can, and I want to strengthen our collaboration with automated testing and QA teams."
+        "heading": "Production Releases",
+        "body": "Releases always make me nervous. To turn them into something I look forward to, I keep improving our workflow day by day. Right now, I'm interested in building workflow that incorporate AI agents."
       },
       "team": {
-        "heading": "Team Love",
-        "body": "For me, one of the most important things at work is the team. I believe a good team builds a good product. So what makes a good team? It depends on the people in it. For me, it's a kind and respectful atmosphere, continuous learning and improvement, and a healthy work-life balance. I'd love to hear from you: what makes a good team for you?"
+        "heading": "Teamwork",
+        "body": "One of the things I value most at work is the team. Because I also build thins on my own, I truly appreciate what it means to have teammates."
       }
     },
     "extra": {
@@ -28,7 +28,7 @@
         "blog": "Tech Blog (Japanese only)",
         "suumiee": "Suumiee (Personal Project)"
       },
-      "closing": "In my free time, I relax at a lovely café with sweeeeets or play video games."
+      "closing": "This portfolio is my playground. I update it at a relaxed pace, the way someone might enjoy knitting."
     }
   },
   "cssShowcase": {

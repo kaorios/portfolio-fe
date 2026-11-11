@@ -34,9 +34,10 @@
   font-family: var(--font-family-h);
   color: rgb(var(--foreground-rgb));
   margin-top: 0;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   letter-spacing: 2px;
   line-height: 1.25;
+  text-align: center;
 }
 .subTitle span {
   letter-spacing: 0;

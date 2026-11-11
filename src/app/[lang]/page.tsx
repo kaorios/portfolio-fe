@@ -31,7 +31,7 @@ export default async function Home() {
       </h1>
       <div className={styles.hero}>
         <p className={styles.subTitle}>
-          I&lsquo;m a Software Engineer, <span>Frontend (Web)</span>.
+          Frontend Software Engineer
         </p>
         <div className={styles.description}>
           <p>{home.description.aim}</p>
@@ -62,7 +62,7 @@ export default async function Home() {
           <Link
             href="https://koroporch.com/blog/"
             target="_blank"
-            rel="noopenner"
+            rel="noopener"
           >
             {home.extra.links.blog}
           </Link>

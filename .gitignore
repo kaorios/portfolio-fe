@@ -36,3 +36,4 @@ storybook-static
 # Chromatic
 build-storybook.log
 chromatic.log
+next-env.d.ts

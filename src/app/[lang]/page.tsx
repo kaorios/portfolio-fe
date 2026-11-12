@@ -30,7 +30,7 @@ export default async function Home() {
         ))}
       </h1>
       <div className={styles.hero}>
-        <p className={styles.subTitle}>
+        <p lang="en" className={styles.subTitle}>
           Frontend Software Engineer
         </p>
         <div className={styles.description}>

@@ -8,12 +8,17 @@
 
   --radius: 18px;
 
-  --font-size-sm: clamp(0.85rem, 3.5vw, 1.2rem);
-  --font-size-md: clamp(1rem, 4vw, 1.35rem);
-  --font-size-lg: clamp(1.5rem, 6vw, 2.5rem);
-  --font-size-xl: clamp(2rem, 9vw, 3.5rem);
+  /* 傾き(vw)   = (最大px − 最小px) / (最大幅 − 最小幅) × 100
+  切片(rem) = (最小px − 傾き/100 × 最小幅) / 16
+  → clamp(最小rem, 切片rem + 傾きvw, 最大rem) */
+  --font-scale: 1;
+  --font-scale-lg: 1;
+  --font-size-sm-base: clamp(0.85rem, 3.5vw, 1.2rem);
+  --font-size-md-base: clamp(1rem, 0.825rem + 0.7vw, 1.35rem);
+  --font-size-lg-base: clamp(1.5rem, 6vw, 2.5rem);
+  --font-size-xl-base: clamp(2rem, 9vw, 3.5rem);
   --font-size-bot: 16px;
-  --font-body: var(--font-size-md);
+
   --header-height: 100px;
   --font-family: var(--font-rubik), sans-serif;
   --font-family-h: var(--font-wendy-one), sans-serif;
@@ -137,4 +142,23 @@ p + p {
   html {
     color-scheme: dark;
   }
+}
+
+:lang(en) {
+  --font-scale: 1;
+  --font-scale-lg: 1;
+}
+
+:lang(ja) {
+  --font-scale: 0.9;
+  --font-scale-lg: 0.8;
+}
+
+:root,
+[lang] {
+  --font-size-sm: calc(var(--font-size-sm-base) * var(--font-scale));
+  --font-size-md: calc(var(--font-size-md-base) * var(--font-scale));
+  --font-size-lg: calc(var(--font-size-lg-base) * var(--font-scale-lg));
+  --font-size-xl: calc(var(--font-size-xl-base) * var(--font-scale));
+  --font-body: var(--font-size-md);
 }
